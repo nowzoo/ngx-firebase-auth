@@ -1,0 +1,17 @@
+{
+    "extends": "../../tslint.json",
+    "rules": {
+        "directive-selector": [
+            true,
+            "attribute",
+            "ngxFirebaseAuth",
+            "camelCase"
+        ],
+        "component-selector": [
+            true,
+            "element",
+            "ngx-firebase-auth",
+            "kebab-case"
+        ]
+    }
+}

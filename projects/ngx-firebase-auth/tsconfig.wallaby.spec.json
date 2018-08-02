@@ -1,0 +1,31 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "../../out-tsc/spec",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"types": [
+			"jasmine",
+			"node"
+		],
+		"lib": [
+			"dom",
+			"es2017"
+		],
+		"paths": {
+			"@nowzoo/ngx-form": [
+				"../../dist/ngx-form"
+			],
+			"@nowzoo/ngx-form/*": [
+				"../../dist/ngx-form/*"
+			]
+		}
+	},
+	"files": [
+		"src/test.ts"
+	],
+	"include": [
+		"**/*.spec.ts",
+		"**/*.d.ts"
+	]
+}

@@ -1,0 +1,29 @@
+<div *ngIf="'error'===screen">
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span [ngSwitch]="error.code">
+      <span *ngSwitchCase="'auth/expired-action-code'">
+        The verify email link you used has expired.
+      </span>
+      <span *ngSwitchCase="'auth/invalid-action-code'">
+        The verify email link you used is invalid.
+        This could be because you have already used it once.
+      </span>
+      <span *ngSwitchDefault>
+        An unexpected error occurred.
+        <br>
+        Code: {{error.code}} | Message: {error.message}}
+      </span>
+    </span>
+  </div>
+  <p class="text-muted">
+    Please <a class="alert-link" [routerLink]="[authService.baseRoute, 'verify-email']">click
+      here</a> to get a new verify email link.
+  </p>
+</div>
+<div *ngIf="'success'===screen">
+  <div class="alert alert-success">
+    <i class="fas fa-check"></i>
+    The email {{result.email}} has been verified.
+  </div>
+</div>

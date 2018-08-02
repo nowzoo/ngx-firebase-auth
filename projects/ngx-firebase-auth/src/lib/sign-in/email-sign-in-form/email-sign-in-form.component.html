@@ -1,0 +1,54 @@
+<form [formGroup]="fg" (ngSubmit)="submit()">
+  <div class="form-group">
+    <div class="d-flex justify-content-between">
+      <label [attr.for]="formId + 'password'">Password for {{email}}</label>
+      <div>
+        <a
+          href="#" role="button"
+          *ngIf="'password'===password.type"
+          (click)="password.type='text'; $event.preventDefault()">Show Password</a>
+        <a
+          href="#" role="button"
+          *ngIf="'text'===password.type"
+          (click)="password.type='password'; $event.preventDefault()">Hide Password</a>
+      </div>
+    </div>
+    <input
+      #password
+      [attr.id]="formId + 'password'"
+      [attr.aria-describedby]="formId + 'password-help'"
+      formControlName="password"
+      type="password"
+      placeholder="Password"
+      class="form-control form-control-lg"
+      [class.is-invalid]="showInvalid(passwordFc)">
+    <ngx-form-error [control]="passwordFc" key="required">
+      Required.
+    </ngx-form-error>
+    <ngx-form-error [control]="passwordFc" key="auth/wrong-password">
+      Wrong password.
+    </ngx-form-error>
+    <span class="form-text text-muted" [attr.id]="formId + 'password-help'">
+      Forgot?
+      <a [routerLink]="[authService.baseRoute, 'reset-password']">Reset Password</a>
+    </span>
+  </div>
+
+  <div class="form-group">
+    <div class="d-flex justify-content-end align-items-center">
+      <div class="mr-2 text-muted" *ngIf="submitting">
+        <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+        <span>Signing you in...</span>
+      </div>
+      <div>
+        <button
+          type="submit"
+          [disabled]="submitting || fg.invalid"
+          class="btn btn-lg btn-success">
+          <i class="fas fa-sign-in fa-fw"></i>
+          Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
