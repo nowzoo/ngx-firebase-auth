@@ -7,6 +7,7 @@ import { IndexComponent } from './index/index.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignOutComponent } from './sign-out/sign-out.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     SignInComponent,
     SignOutComponent,
     SignUpComponent,
+    VerifyEmailComponent,
   ],
   providers: [
     NgxFirebaseAuthService
