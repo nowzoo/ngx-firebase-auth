@@ -1,28 +1,28 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { FormControl, FormGroup } from '@angular/forms';
+import {  ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { AngularFireAuth } from 'angularfire2/auth';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import {
-  NgxFirebaseAuthRoute,
-  NGX_FIREBASE_AUTH_OPTIONS,
-  ngxFirebaseAuthOAuthProviderNames
-} from '../shared';
-
+import { ActivatedRoute, Router } from '@angular/router';
 import { SignInComponent } from './sign-in.component';
+import { auth } from 'firebase/app';
 
+import {
+  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs
+} from '../shared';
 describe('SignInComponent', () => {
   let component: SignInComponent;
   let fixture: ComponentFixture<SignInComponent>;
+
 
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ SignInComponent ],
       providers: [
-        { provide: NGX_FIREBASE_AUTH_OPTIONS, useValue: {methods: []} },
-        { provide: NgxFirebaseAuthService, useValue: {} },
-        { provide: ActivatedRoute, useValue: {snapshot: {queryParams: {}}} }
+        {provide: AngularFireAuth, useValue: {auth: {}}},
+        {provide: NgxFirebaseAuthService, useValue: {}},
+        {provide: ActivatedRoute, useValue: {snapshot: {queryParams: {}}} },
+        {provide: Router, useValue: {}},
       ]
     })
     .overrideTemplate(SignInComponent, '')
@@ -35,330 +35,284 @@ describe('SignInComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('getters', () => {
-    it('should have options', () => {
-      expect(component.options).toBeTruthy();
-    });
-    it('should have authService', () => {
-      expect(component.authService).toBeTruthy();
-    });
-    it('should have queryParams', () => {
-      expect(component.queryParams).toBeTruthy();
-    });
-
-    it('should have methods', () => {
-      expect(component.methods).toBeTruthy();
-    });
-
-    it('should have emailFromRoute', () => {
-      expect(component.emailFromRoute).toBe('');
-    });
+  it('should have auth', () => {
+    expect(component.auth).toBeTruthy();
+  });
+  it('should have authService', () => {
+    expect(component.authService).toBeTruthy();
+  });
+  it('should have route', () => {
+    expect(component.route).toBeTruthy();
+  });
+  it('should have queryParams', () => {
+    expect(component.queryParams).toBeTruthy();
+  });
+  it('should have router', () => {
+    expect(component.router).toBeTruthy();
+  });
+  it('should have formId', () => {
+    expect(component.formId).toBeTruthy();
+  });
+  it('should have submitting', () => {
+    expect(component.submitting).toBe(false);
+  });
+  it('should have unhandledError', () => {
+    expect(component.unhandledError).toBe(null);
   });
 
-  describe('userExists getter', () => {
-    it('should be true if methods.length > 0', () => {
-      spyOnProperty(component, 'methods').and.returnValue(['password']);
-      expect(component.userExists).toBe(true);
-    });
-    it('should be false if methods.length === 0', () => {
-      spyOnProperty(component, 'methods').and.returnValue([]);
-      expect(component.userExists).toBe(false);
-    });
-  });
-  describe('userHasPassword getter', () => {
-    it('should be true if methods has password', () => {
-      spyOnProperty(component, 'methods').and.returnValue(['password']);
-      expect(component.userHasPassword).toBe(true);
-    });
-    it('should be false if methods does not have password', () => {
-      spyOnProperty(component, 'methods').and.returnValue(['twitter.com']);
-      expect(component.userHasPassword).toBe(false);
-    });
-    it('should be false if methods.length === 0', () => {
-      spyOnProperty(component, 'methods').and.returnValue([]);
-      expect(component.userHasPassword).toBe(false);
-    });
+  it('should have signInMethodsForEmail', () => {
+    expect(component.signInMethodsForEmail).toBe(null);
+    component.signInMethodsForEmail = ['twitter.com'];
+    expect(component.signInMethodsForEmail).toEqual(['twitter.com']);
   });
 
-  describe('userOAuthMethods getter', () => {
-    it('should be empty if methods is empty', () => {
-      spyOnProperty(component, 'methods').and.returnValue([]);
-      expect(component.userOAuthMethods).toEqual([]);
-    });
-    it('should not return password', () => {
-      spyOnProperty(component, 'methods').and.returnValue(['password']);
-      expect(component.userOAuthMethods).toEqual([]);
-    });
-    it('should return the oauth methods', () => {
-      spyOnProperty(component, 'methods').and.returnValue(['password', 'twitter.com', 'facebook.com']);
-      expect(component.userOAuthMethods).toEqual(['twitter.com', 'facebook.com']);
-    });
+  it('should have emailHasPasswordMethod', () => {
+    expect(component.emailHasPasswordMethod).toBe(false);
+    component.signInMethodsForEmail = ['twitter.com'];
+    expect(component.emailHasPasswordMethod).toBe(false);
+    component.signInMethodsForEmail = ['twitter.com', 'password'];
+    expect(component.emailHasPasswordMethod).toBe(true);
   });
-
-  describe('passwordSignUpEnabled getter', () => {
-    it('should be false if password is not in options.methods', () => {
-      spyOnProperty(component, 'options').and.returnValue({methods: ['twitter.com']});
-      expect(component.passwordSignUpEnabled).toBe(false);
-    });
-    it('should be true if password is in options.methods', () => {
-      spyOnProperty(component, 'options').and.returnValue({methods: ['twitter.com', 'password']});
-      expect(component.passwordSignUpEnabled).toBe(true);
-    });
+  it('should have emailOAuthMethods', () => {
+    expect(component.emailOAuthMethods).toEqual([]);
+    component.signInMethodsForEmail = ['twitter.com'];
+    expect(component.emailOAuthMethods).toEqual(['twitter.com']);
+    component.signInMethodsForEmail = ['twitter.com', 'password'];
+    expect(component.emailOAuthMethods).toEqual(['twitter.com']);
+    component.signInMethodsForEmail = ['twitter.com', 'password', 'facebook.com'];
+    expect(component.emailOAuthMethods).toEqual(['twitter.com', 'facebook.com']);
+    component.signInMethodsForEmail = [ 'password'];
+    expect(component.emailOAuthMethods).toEqual([]);
   });
-
-  describe('oAuthSignUpMethodsEnabled getter', () => {
-    it('should return an array excludeing password', () => {
-      spyOnProperty(component, 'options').and.returnValue({methods: ['twitter.com', 'password', 'google.com']});
-      expect(component.oAuthSignUpMethodsEnabled).toEqual(['twitter.com', 'google.com']);
-    });
-  });
-
-  describe('setChildFormBusy(b)', () => {
-    it('should set childFormBusy', () => {
-      component.setChildFormBusy(true);
-      expect(component.childFormBusy).toBe(true);
-      component.setChildFormBusy(false);
-      expect(component.childFormBusy).toBe(false);
-    });
-  });
-
-  describe('showError(err)', () => {
+  describe('initFg()', () => {
     beforeEach(() => {
-      component.unhandledError = null;
-      component.screen = 'form';
+      component.initFg();
+      spyOn(component, 'validateEmail').and.callFake(() => Promise.resolve(null));
     });
-    it('should set screen to error', () => {
-      const err: any = {};
-      component.showError(err);
-      expect(component.screen).toBe('error');
-    });
-    it('should set unhandledError', () => {
-      const err: any = {};
-      component.showError(err);
-      expect(component.unhandledError).toBe(err);
-    });
-  });
-
-  describe('showSuccess(cred)', () => {
-    beforeEach(() => {
-      component.cred = null;
-      component.screen = 'form';
-    });
-    it('should set screen to success', () => {
-      const cred: any = {};
-      component.showSuccess(cred);
-      expect(component.screen).toBe('success');
-    });
-    it('should set cred', () => {
-      const cred: any = {};
-      component.showSuccess(cred);
-      expect(component.cred).toBe(cred);
-    });
-  });
-
-  describe('showForm', () => {
-    let onEmailValueSpy;
-    beforeEach(() => {
-      spyOnProperty(component, 'emailFromRoute').and.returnValue('gfghfjhg');
-      onEmailValueSpy = spyOn(component, 'onEmailValue').and.callFake(() => {});
-      component.screen = 'wait';
-    });
-    it('should set fg', () => {
-      component.showForm();
+    it('should set emailFc', () => {
       expect(component.emailFc).toEqual(jasmine.any(FormControl));
+    });
+    it('should set the value of emailFc to the email queryParam, if present', () => {
+      spyOnProperty(component, 'queryParams').and.returnValue({email: 'foo@bar.com'});
+      component.initFg();
+      expect(component.emailFc.value).toBe('foo@bar.com');
+    });
+    it('should set the value of emailFc to empty string, if the query param is not present', () => {
+      spyOnProperty(component, 'queryParams').and.returnValue({});
+      expect(component.emailFc.value).toBe('');
+    });
+    it('should set passwordFc', () => {
+      expect(component.passwordFc).toEqual(jasmine.any(FormControl));
+      expect(component.passwordFc.value).toBe('');
+    });
+    it('should set rememberFc', () => {
+      expect(component.rememberFc).toEqual(jasmine.any(FormControl));
+      expect(component.rememberFc.value).toBe(true);
+    });
+    it('should set up the form group', () => {
       expect(component.fg).toEqual(jasmine.any(FormGroup));
-      expect(component.fg.get('email')).toEqual(component.emailFc);
-      expect(component.emailFc.value).toBe(component.emailFromRoute);
+      expect(component.fg.get('email')).toBe(component.emailFc);
+      expect(component.fg.get('password')).toBe(component.passwordFc);
+      expect(component.fg.get('remember')).toBe(component.rememberFc);
     });
-
-    it('should unsubscribe from an existing subscription', () => {
-      const sub = {unsubscribe: jasmine.createSpy()};
-      spyOnProperty(component, 'emailSubscription').and.returnValue(sub);
-      component.showForm();
-      expect(sub.unsubscribe).toHaveBeenCalled();
-    });
-    it('should set emailSubscription', () => {
-      component.showForm();
-      expect(component.emailSubscription).toEqual(jasmine.any(Subscription));
-    });
-    it('should set screen to form', () => {
-      component.showForm();
-      expect(component.screen).toBe('form');
-    });
-
-
-    it('should call onEmailValue once to begin with', () => {
-      component.showForm();
-      expect(component.onEmailValue).toHaveBeenCalledWith();
-    });
-    it('should call onEmailValue when the value changes', fakeAsync(() => {
-      component.showForm();
-      expect(component.onEmailValue).toHaveBeenCalledTimes(1);
-      component.emailFc.setValue('foo@bar.com');
-      tick(SignInComponent.emailFetchDebounce);
-      expect(component.onEmailValue).toHaveBeenCalledTimes(2);
-    }));
-    it('should call onEmailValue when the status changes', fakeAsync(() => {
-      component.showForm();
-      expect(component.onEmailValue).toHaveBeenCalledTimes(1);
-      component.emailFc.setValue('foo@bar.com');
-      tick(SignInComponent.emailFetchDebounce);
-      expect(component.onEmailValue).toHaveBeenCalledTimes(2);
-      component.emailFc.setErrors({foo: true});
-      tick(SignInComponent.emailFetchDebounce);
-      expect(component.onEmailValue).toHaveBeenCalledTimes(3);
-    }));
   });
-
-  describe('onEmailValue()', () => {
-    let emailFc;
-    let fetchSpy;
-    beforeEach(() => {
-      spyOn(component, 'setChildFormBusy').and.callFake(() => {});
-      emailFc = component.emailFc = new FormControl('foo@bar.com');
-      fetchSpy = jasmine.createSpy().and.returnValue(Promise.resolve([]));
-      spyOnProperty(component, 'authService').and.returnValue({fetchSignInMethodsForEmail: fetchSpy});
-    });
-    it('should call setChildFormBusy', () => {
-      component.onEmailValue();
-      expect(component.setChildFormBusy).toHaveBeenCalledWith(false);
-    });
-    it('should handle success if the api call returns an empty array', fakeAsync(() => {
-      fetchSpy.and.returnValue(Promise.resolve([]));
-      component.onEmailValue();
-      expect(component.methodsFetchStatus).toBe('fetching');
-      tick();
-      expect(component.methodsFetchStatus).toBe('fetched');
-      expect(component.methods).toEqual([]);
-    }));
-    it('should handle success if the api call returns an array', fakeAsync(() => {
-      fetchSpy.and.returnValue(Promise.resolve(['twitter.com', 'password']));
-      component.onEmailValue();
-      expect(component.methodsFetchStatus).toBe('fetching');
-      tick();
-      expect(component.methodsFetchStatus).toBe('fetched');
-      expect(component.methods).toEqual(['twitter.com', 'password']);
-    }));
-    it('should handle when the email control is invalid', fakeAsync(() => {
-      emailFc.setErrors({foo: true});
-      component.onEmailValue();
-      expect(component.methodsFetchStatus).toBe('unfetched');
-      expect(fetchSpy).not.toHaveBeenCalled();
-      expect(component.methods).toEqual([]);
-    }));
-    it('should handle auth/invalid-email error', fakeAsync(() => {
-      const err = {code: 'auth/invalid-email'};
-      fetchSpy.and.callFake(() => Promise.reject(err));
-      component.onEmailValue();
-      expect(component.methodsFetchStatus).toBe('fetching');
-      expect(fetchSpy).toHaveBeenCalledWith(emailFc.value);
-      tick();
-      expect(component.methodsFetchStatus).toBe('unfetched');
-      expect(emailFc.hasError('auth/invalid-email')).toBe(true);
-      emailFc.setValue('hsghgsh');
-      expect(emailFc.hasError('auth/invalid-email')).toBe(false);
-      expect(component.methods).toEqual([]);
-    }));
-    it('should handle an unexpected api error', fakeAsync(() => {
-      const err = {code: 'auth/foo'};
-      component.unhandledError = {code: 'any'} as any;
-      fetchSpy.and.callFake(() => Promise.reject(err));
-      component.onEmailValue();
-      expect(component.unhandledError).toBe(null);
-      expect(component.methodsFetchStatus).toBe('fetching');
-      expect(fetchSpy).toHaveBeenCalledWith(emailFc.value);
-      tick();
-      expect(component.methodsFetchStatus).toBe('unfetched');
-      expect(emailFc.hasError('auth/invalid-email')).toBe(false);
-      expect(component.unhandledError).toBe(err);
-      expect(component.methods).toEqual([]);
-    }));
-  });
-
-  describe('signInWithOAuth', () => {
-    let apiSpy;
-    beforeEach(() => {
-      spyOn(component, 'showSuccess').and.callFake(() => {});
-      spyOn(component, 'showError').and.callFake(() => {});
-      apiSpy = jasmine.createSpy();
-      spyOnProperty(component, 'authService').and.returnValue({signInWithOAuth: apiSpy});
-    });
-    it('should show success if signInWithOAuth resolves with cred', fakeAsync(() => {
-      const cred = {};
-      apiSpy.and.callFake(() => Promise.resolve(cred));
-      component.signInWithOAuth('twitter.com');
-      expect(apiSpy).toHaveBeenCalledWith('twitter.com');
-      tick();
-      expect(component.showSuccess).toHaveBeenCalledWith(cred);
-    }));
-    it('should show error if signInWithOAuth rejects', fakeAsync(() => {
-      const error = {};
-      apiSpy.and.callFake(() => Promise.reject(error));
-      component.signInWithOAuth('twitter.com');
-      expect(apiSpy).toHaveBeenCalledWith('twitter.com');
-      tick();
-      expect(component.showError).toHaveBeenCalledWith(error);
-    }));
-    it('should show nothing if signInWithOAuth resolves with null ', fakeAsync(() => {
-      apiSpy.and.callFake(() => Promise.resolve(null));
-      component.signInWithOAuth('twitter.com');
-      expect(apiSpy).toHaveBeenCalledWith('twitter.com');
-      tick();
-      expect(component.showSuccess).not.toHaveBeenCalled();
-    }));
-  });
-
-  describe('ngOnInit()', () => {
-    let apiSpy;
+  describe('ngOnInit', () => {
     let setRouteSpy;
     beforeEach(() => {
-      spyOn(component, 'showForm').and.callFake(() => {});
-      spyOn(component, 'showSuccess').and.callFake(() => {});
-      spyOn(component, 'showError').and.callFake(() => {});
-      apiSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(null));
       setRouteSpy = jasmine.createSpy();
-      spyOnProperty(component, 'authService').and.returnValue({getRedirectResult: apiSpy, setRoute: setRouteSpy});
+      spyOnProperty(component, 'authService').and.returnValue({setRoute: setRouteSpy});
+      spyOn(component, 'initFg').and.callFake(() => {});
     });
-    it('should set the route', () => {
+    it('should set route', () => {
       component.ngOnInit();
-      expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.signIn);
+      expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.signUp);
     });
-    it('should set formId', () => {
+    it('should call initFg', () => {
       component.ngOnInit();
-      expect(component.formId).toEqual(jasmine.any(String));
+      expect(component.initFg).toHaveBeenCalledWith();
     });
-    it('should set emailFromRoute if the queryParam exists', () => {
-      spyOnProperty(component, 'queryParams').and.returnValue({email: 'foo@bar.com'});
-      component.ngOnInit();
-      expect(component.emailFromRoute).toBe('foo@bar.com');
+  });
+  describe('submit', () => {
+    let user;
+    let cred;
+    let setPersistenceSpy;
+    let signInSpy;
+    let pushCredSpy;
+    let navigateSpy;
+    beforeEach(() => {
+      spyOn(component, 'validateEmail').and.callFake(() => Promise.resolve(null));
+      pushCredSpy = jasmine.createSpy();
+      user = {};
+      cred = {user: user};
+      signInSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(cred));
+      setPersistenceSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
+      navigateSpy = jasmine.createSpy();
+      spyOnProperty(component, 'auth').and.returnValue({
+        signInWithEmailAndPassword: signInSpy,
+        setPersistence: setPersistenceSpy,
+      });
+      spyOnProperty(component, 'authService').and.returnValue({pushCred: pushCredSpy});
+      spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
+      component.initFg();
+      component.fg.setValue({
+        email: 'foo@bar.com',
+        password: 'password',
+        remember: true
+      });
     });
-    it('should set emailFromRoute if the queryParam does not exist', () => {
-      spyOnProperty(component, 'queryParams').and.returnValue({});
-      component.ngOnInit();
-      expect(component.emailFromRoute).toBe('');
-    });
-    it('should show error if getRedirectResult rejects', fakeAsync(() => {
-      const error = {code: 'foo'};
-      apiSpy.and.callFake(() => Promise.reject(error));
-      component.ngOnInit();
-      expect(apiSpy).toHaveBeenCalledWith();
+
+    it('should set the persistence if remember is true', fakeAsync(() => {
+      component.rememberFc.setValue(true);
+      component.submit();
       tick();
-      expect(component.showError).toHaveBeenCalledWith(error);
+      expect(setPersistenceSpy).toHaveBeenCalledWith(auth.Auth.Persistence.LOCAL);
     }));
-    it('should show success if getRedirectResult resolves with a cred', fakeAsync(() => {
-      const cred = {};
-      apiSpy.and.callFake(() => Promise.resolve(cred));
-      component.ngOnInit();
-      expect(apiSpy).toHaveBeenCalledWith();
+    it('should set the persistence if remember is false', fakeAsync(() => {
+      component.rememberFc.setValue(false);
+      component.submit();
       tick();
-      expect(component.showSuccess).toHaveBeenCalledWith(cred);
+      expect(setPersistenceSpy).toHaveBeenCalledWith(auth.Auth.Persistence.SESSION);
     }));
-    it('should show form if getRedirectResult resolves with null', fakeAsync(() => {
-      apiSpy.and.callFake(() => Promise.resolve(null));
-      component.ngOnInit();
-      expect(apiSpy).toHaveBeenCalledWith();
+    it('should handle setPersistence api error', fakeAsync(() => {
+      const error = {code: 'auth/some-persistence-error'};
+      setPersistenceSpy.and.callFake(() => Promise.reject(error));
+      component.submit();
       tick();
-      expect(component.showForm).toHaveBeenCalledWith();
+      expect(component.unhandledError).toBe(error);
+    }));
+    it('should call signInWithEmailAndPassword', fakeAsync(() => {
+      component.submit();
+      tick();
+      expect(signInSpy).toHaveBeenCalledWith('foo@bar.com', 'password');
+    }));
+    it('should handle a sign in error', fakeAsync(() => {
+      const error = {code: 'auth/some-error'};
+      signInSpy.and.callFake(() => Promise.reject(error));
+      component.submit();
+      tick();
+      expect(component.unhandledError).toBe(error);
+    }));
+    it('should call authService.pushCred', fakeAsync(() => {
+      component.submit();
+      tick();
+      expect(pushCredSpy).toHaveBeenCalledWith(cred);
+    }));
+    it('should set submitting on success', fakeAsync(() => {
+      component.submit();
+      expect(component.submitting).toBe(true);
+      tick();
+      expect(component.submitting).toBe(true);
+    }));
+    it('should set unhandledError to null on success', fakeAsync(() => {
+      component.unhandledError = {} as any;
+      component.submit();
+      tick();
+      expect(component.unhandledError).toBe(null);
+    }));
+    it('should set submitting on failure', fakeAsync(() => {
+      const error = {code: 'auth/foo'};
+      signInSpy.and.callFake(() => Promise.reject(error));
+      component.submit();
+      expect(component.submitting).toBe(true);
+      tick();
+      expect(component.submitting).toBe(false);
+    }));
+    it('should handle auth/wrong-password', fakeAsync(() => {
+      component.unhandledError = {} as any;
+      const error = {code: 'auth/wrong-password'};
+      signInSpy.and.callFake(() => Promise.reject(error));
+      component.submit();
+      tick();
+      expect(component.passwordFc.hasError('auth/wrong-password')).toBe(true);
+      expect(component.unhandledError).toBe(null);
+      component.passwordFc.setValue('');
+      expect(component.passwordFc.hasError('auth/wrong-password')).toBe(false);
+    }));
+    it('should handle an unknown error auth/foo', fakeAsync(() => {
+      component.unhandledError = {} as any;
+      const error = {code: 'auth/foo'};
+      signInSpy.and.callFake(() => Promise.reject(error));
+      component.submit();
+      tick();
+      expect(component.unhandledError).toBe(error);
+    }));
+    it('should navigate if the redirect is not cancelled', fakeAsync(() => {
+      component.authService.redirectCancelled = false;
+      component.submit();
+      tick();
+      expect(navigateSpy).toHaveBeenCalledWith(['../'], {relativeTo: component.route});
+    }));
+    it('should not navigate if the redirect is cancelled', fakeAsync(() => {
+      component.authService.redirectCancelled = true;
+      component.submit();
+      tick();
+      expect(navigateSpy).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('validateEmail', () => {
+    let emailFc: FormControl;
+    let fetchSignInMethodsForEmailSpy;
+    let validateSpy;
+    beforeEach(() => {
+      validateSpy = spyOn(component, 'validateEmail').and.callThrough();
+      fetchSignInMethodsForEmailSpy = jasmine.createSpy();
+      emailFc = new FormControl('', {
+        asyncValidators: [component.validateEmail.bind(component)]
+      });
+      spyOnProperty(component, 'auth').and.returnValue({
+        fetchSignInMethodsForEmail: fetchSignInMethodsForEmailSpy
+      });
+    });
+    it('should be required error if control is empty', fakeAsync(() => {
+      emailFc.setValue('');
+      tick();
+      expect(emailFc.errors).toEqual({required: true});
+      expect(component.signInMethodsForEmail).toEqual([]);
+      expect(validateSpy).toHaveBeenCalled();
+      expect(fetchSignInMethodsForEmailSpy).not.toHaveBeenCalled();
+    }));
+    it('should be email error if control is not an email', fakeAsync(() => {
+      emailFc.setValue('foo');
+      tick();
+      expect(emailFc.errors).toEqual({email: true});
+      expect(component.signInMethodsForEmail).toEqual([]);
+      expect(validateSpy).toHaveBeenCalled();
+      expect(fetchSignInMethodsForEmailSpy).not.toHaveBeenCalled();
+    }));
+    it('should be error ngx-firebase-auth/user-not-found if the methods are empty', fakeAsync(() => {
+      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve([]));
+      emailFc.setValue('foo@bar.com');
+      tick();
+      expect(emailFc.errors).toEqual({'ngx-firebase-auth/user-not-found': true});
+      expect(component.signInMethodsForEmail).toEqual([]);
+      expect(validateSpy).toHaveBeenCalled();
+      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
+    }));
+    it('should be error ngx-firebase-auth/no-password if the methods do not have password', fakeAsync(() => {
+      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve(['twitter.com']));
+      emailFc.setValue('foo@bar.com');
+      tick();
+      expect(component.signInMethodsForEmail).toEqual(['twitter.com']);
+      expect(emailFc.errors).toEqual({'ngx-firebase-auth/no-password': true});
+      expect(validateSpy).toHaveBeenCalled();
+      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
+    }));
+    it('should be null if the methods has password', fakeAsync(() => {
+      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve(['twitter.com', 'password']));
+      emailFc.setValue('foo@bar.com');
+      tick();
+      expect(emailFc.errors).toEqual(null);
+      expect(component.signInMethodsForEmail).toEqual(['twitter.com', 'password']);
+      expect(validateSpy).toHaveBeenCalled();
+      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
+    }));
+    it('should be whatever code the api call rejects with', fakeAsync(() => {
+      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.reject({code: 'auth/invalid-email'}));
+      emailFc.setValue('foo@bar.com');
+      tick();
+      expect(component.signInMethodsForEmail).toEqual([]);
+      expect(emailFc.errors).toEqual({'auth/invalid-email': true});
     }));
   });
 });

@@ -1,0 +1,113 @@
+<div *ngIf="'wait' === screen">
+  <div class="alert alert-light">
+    <p class="mb-0">
+      <i class="fas fa-spin fa-spinner" aria-hidden="true"></i>
+      Please wait...
+    </p>
+  </div>
+</div>
+
+<div *ngIf="'popupBlockedError'===screen">
+  <div class="alert alert-danger">
+    <p class="mb-0">
+      <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+      Popup blocked!
+    </p>
+  </div>
+  <p>
+    The browser blocked the {{currentProviderId}} popup.
+    Please unblock popups and try again.
+  </p>
+  <p>
+    <button
+      type="button"
+      class="btn btn-lg btn-block btn-primary"
+      (click)="submit(currentProviderId)">Try Again</button>
+  </p>
+</div>
+
+<div *ngIf="'popupCancelledError'===screen">
+  <div class="alert alert-danger">
+    <p class="mb-0">
+      <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+      Cancelled
+    </p>
+  </div>
+  <p>
+    You closed the {{currentProviderId}} popup without signing in.
+  </p>
+  <p>
+    <button
+      type="button"
+      class="btn btn-lg btn-block btn-primary"
+      (click)="submit(currentProviderId)">Try Again</button>
+  </p>
+
+  <p>
+    <button
+      type="button"
+      class="btn btn-lg btn-block btn-primary"
+      (click)="submit(currentProviderId)">Try Again</button>
+  </p>
+</div>
+
+<div *ngIf="'accountExistsError'===screen">
+  <div class="alert alert-danger">
+    <p>
+      <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+      Woops! An error occurred.
+    </p>
+    <p class="mb-0">
+      The account associated with the email {{error.email}}
+      is not yet linked to a {{error.credential.providerId}} account.
+      Please sign in using one of the methods listed below.
+    </p>
+  </div>
+  <h6>Sign in with...</h6>
+  <div *ngIf="emailHasPasswordMethod">
+    <p>
+      <a
+        [routerLink]="['../', 'sign-in']"
+        [queryParams]="{email: error.email}"
+        class="btn btn-lg btn-block btn-secondary">Email/Password</a>
+    </p>
+    <p *ngIf="emailOAuthMethods.length > 0">...or...</p>
+  </div>
+  <p *ngFor="let id of emailOAuthMethods">
+    <button
+      type="button"
+      class="btn btn-lg btn-block btn-primary"
+      (click)="submit(id)">{{id}}</button>
+  </p>
+
+</div>
+
+
+
+<div *ngIf="'form' === screen || 'error' === screen">
+  <div *ngIf="'error' === screen">
+    <div class="alert alert-danger">
+      <p>
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        Woops! An unexpected error occurred.
+      </p>
+      <p>
+        Code: {{error.code}}
+      </p>
+      <p class="mb-0">
+        Message: {{error.message}}
+      </p>
+    </div>
+    <p>Please try again.</p>
+  </div>
+  <div *ngIf="options.oAuthMethods.length > 0">
+    <h6>Sign In With...</h6>
+    <p *ngFor="let id of options.oAuthMethods">
+      <button
+        type="button"
+        class="btn btn-lg btn-block btn-primary"
+        (click)="submit(id)">{{id}}</button>
+    </p>
+  </div>
+
+</div>

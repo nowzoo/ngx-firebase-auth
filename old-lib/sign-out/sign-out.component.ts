@@ -41,7 +41,7 @@ export class SignOutComponent implements OnInit {
     this.authService.setRoute(NgxFirebaseAuthRoute.signOut);
     this.auth.signOut()
       .then(() => {
-        this.router.navigate(['../', ngxFirebaseAuthRouteSlugs.signIn], {relativeTo: this.route});
+        this.router.navigate(['../', ngxFirebaseAuthRouteSlugs.signIn]);
       });
   }
 

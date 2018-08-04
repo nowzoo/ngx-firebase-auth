@@ -20,8 +20,6 @@ export enum NgxFirebaseAuthOAuthMethod {
 export enum NgxFirebaseAuthRoute {
   none,
   signIn,
-  oAuthSignIn,
-  signUp,
   signOut,
   oob,
   oobResetPassword,
@@ -33,9 +31,7 @@ export enum NgxFirebaseAuthRoute {
 
 export const ngxFirebaseAuthRouteSlugs = {
   signIn: 'sign-in',
-  signUp: 'sign-up',
   signOut: 'sign-out',
-  oAuthSignIn: 'oauth-sign-in',
   oob: 'oob',
   oobResetPassword: 'oob-reset-password',
   oobVerifyEmail: 'oob-verify-email',
@@ -45,7 +41,7 @@ export const ngxFirebaseAuthRouteSlugs = {
 };
 
 export interface INgxFirebaseAuthOptions {
-  oAuthMethods: string[];
+  methods: string[];
   authProviderFactory?: (providerId: string) => auth.AuthProvider;
 }
 

@@ -1,18 +1,15 @@
-import { Component, OnInit, Inject, NgZone } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/forms';
 import { auth } from 'firebase/app';
-import { combineLatest, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-
+import { take } from 'rxjs/operators';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
+import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
 import {
-  NgxFirebaseAuthRoute,
-  NGX_FIREBASE_AUTH_OPTIONS,
-  INgxFirebaseAuthOptions,
-  ngxFirebaseAuthOAuthProviderNames
+  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs
 } from '../shared';
+
 @Component({
   selector: 'ngx-firebase-auth-sign-in',
   templateUrl: './sign-in.component.html',
@@ -20,172 +17,137 @@ import {
 })
 export class SignInComponent implements OnInit {
 
-  static emailFetchDebounce = 1000;
+  private _signInMethodsForEmail: string[] = null;
 
-  private _methods: string[] = [];
-  private _emailSubscription: Subscription = null;
-  private _emailFromRoute = '';
-
-  screen: 'wait' | 'form' | 'success' | 'error' = 'wait';
-  formId: string;
+  formId = 'ngx-firebase-auth-sign-in-';
   submitting = false;
-  emailFc: FormControl;
-  fg: FormGroup;
   unhandledError: auth.Error = null;
-  showInvalid = NgxFormUtils.showInvalid;
-  providerNames = ngxFirebaseAuthOAuthProviderNames;
-  childFormBusy = false;
-  methodsFetchStatus: 'unfetched' | 'fetching' | 'fetched' = 'unfetched';
-
-  cred: auth.UserCredential = null;
-
+  emailFc: FormControl;
+  passwordFc: FormControl;
+  rememberFc: FormControl;
+  fg: FormGroup;
+  signUpRouterLink: string[] = ['../', ngxFirebaseAuthRouteSlugs.signUp];
 
   constructor(
-    @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
+    private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
-    private _ngZone: NgZone
+    private _router: Router
   ) { }
 
-  get options(): INgxFirebaseAuthOptions {
-    return this._options;
+  get auth(): auth.Auth {
+    return this._afAuth.auth;
   }
 
   get authService(): NgxFirebaseAuthService {
     return this._authService;
   }
 
+  get route(): ActivatedRoute {
+    return this._route;
+  }
+
   get queryParams(): {[key: string]: any} {
-    return this._route.snapshot.queryParams;
+    return this.route.snapshot.queryParams;
   }
 
-
-  get methods(): string[] {
-    return this._methods;
+  get router(): Router {
+    return this._router;
   }
 
-  get userExists(): boolean {
-    return this.methods.length > 0;
+  get signInMethodsForEmail(): string[] | null {
+    return this._signInMethodsForEmail;
+  }
+  set signInMethodsForEmail(methods: string[] | null) {
+    this._signInMethodsForEmail = methods;
   }
 
-  get userHasPassword(): boolean {
-    return this.methods.indexOf('password') > -1;
-  }
-
-  get userOAuthMethods(): string[] {
-    return this.methods.filter(id => 'password' !== id);
-  }
-
-  get passwordSignUpEnabled(): boolean {
-    return this.options.methods.indexOf('password') > -1;
-  }
-
-  get oAuthSignUpMethodsEnabled(): string[] {
-    return this.options.methods.filter(id => 'password' !== id);
-  }
-
-  get emailSubscription(): Subscription {
-    return this._emailSubscription;
-  }
-
-  get emailFromRoute(): string {
-    return this._emailFromRoute;
-  }
-
-  setChildFormBusy(busy: boolean) {
-    this.childFormBusy = busy;
-  }
-
-  showSuccess(cred: auth.UserCredential) {
-    this.cred = cred;
-    this.screen = 'success';
-  }
-
-  showError(error: auth.Error) {
-    this.unhandledError = error;
-    this.screen = 'error';
-  }
-
-  showForm() {
-    if (this.emailSubscription) {
-      this.emailSubscription.unsubscribe();
+  get emailHasPasswordMethod(): boolean {
+    if (! this.signInMethodsForEmail) {
+      return false;
     }
-    this.emailFc = new FormControl(this.emailFromRoute, {validators: [Validators.required, Validators.email]});
-    this.fg = new FormGroup({
-      email: this.emailFc,
-    });
-    this._emailSubscription = combineLatest(this.emailFc.valueChanges, this.emailFc.statusChanges)
-      .pipe(debounceTime(SignInComponent.emailFetchDebounce))
-      .subscribe(() => {
-        this.onEmailValue();
-      });
-    this.onEmailValue();
-    this.screen = 'form';
-
+    return this.signInMethodsForEmail.indexOf('password') !== -1;
   }
+
+  get emailOAuthMethods(): string[] {
+    if (! this.signInMethodsForEmail) {
+      return [];
+    }
+    return this.signInMethodsForEmail.filter(id => 'password' !== id);
+  }
+
+
 
   ngOnInit() {
-    this.authService.setRoute(NgxFirebaseAuthRoute.signIn);
-    this._emailFromRoute = this.queryParams.email || '';
-    this.formId = NgxFirebaseAuthService.uniqueId();
-    this.authService.getRedirectResult()
-      .then((cred: auth.UserCredential) => {
-        if (! cred) {
-          this.showForm();
-        } else {
-          this.showSuccess(cred);
-        }
-      })
-      .catch((error: auth.Error) => {
-        this.showError(error);
-      });
+    this.authService.setRoute(NgxFirebaseAuthRoute.signUp);
+    this.initFg();
   }
-
-  onEmailValue() {
-    this.unhandledError = null;
-    this.methodsFetchStatus = 'fetching';
-    this.setChildFormBusy(false);
-    this._ngZone.runOutsideAngular(() => {
-      if (this.emailFc.status !== 'VALID') {
-        this._ngZone.run(() => {
-          this._methods = [];
-          this.methodsFetchStatus = 'unfetched';
-        });
-        return;
-      }
-      this.authService.fetchSignInMethodsForEmail(this.emailFc.value)
-        .then((results) => {
-          this._ngZone.run(() => {
-            this._methods = results;
-            this.methodsFetchStatus = 'fetched';
-          });
-        })
-        .catch((error: auth.Error) => {
-          this._ngZone.run(() => {
-            switch (error.code) {
-              case 'auth/invalid-email':
-                NgxFormUtils.setErrorUntilChanged(this.emailFc, error.code);
-                break;
-              default:
-                this.unhandledError = error;
-                break;
-            }
-            this.methodsFetchStatus = 'unfetched';
-          });
-        });
+  initFg() {
+    this.emailFc = new FormControl( this.queryParams.email || '', {asyncValidators: this.validateEmail.bind(this), updateOn: 'blur'});
+    this.passwordFc = new FormControl('', {validators: [Validators.required]});
+    this.rememberFc = new FormControl(true);
+    this.fg = new FormGroup({
+       email: this.emailFc, password: this.passwordFc, remember: this.rememberFc
     });
   }
 
-  signInWithOAuth(providerId: string) {
-    this.authService.signInWithOAuth(providerId)
-      .then((cred: auth.UserCredential) => {
-        if (cred) {
-          this.showSuccess(cred);
+
+  submit() {
+    this.submitting = true;
+    this.unhandledError = null;
+    const email = this.emailFc.value.trim();
+    const password = this.passwordFc.value;
+    const persistence = this.rememberFc.value === false ? auth.Auth.Persistence.SESSION : auth.Auth.Persistence.LOCAL;
+    let cred: auth.UserCredential;
+    return this.auth.signInWithEmailAndPassword(email, password)
+      .then((result: auth.UserCredential) => {
+        cred = result;
+        return this.auth.setPersistence(persistence);
+      })
+      .then(() => {
+        this.authService.pushCred(cred);
+        if (! this.authService.redirectCancelled) {
+          this.router.navigate(['../'], {relativeTo: this.route});
         }
       })
       .catch((error: auth.Error) => {
-        this.showError(error);
+        this.submitting = false;
+        switch (error.code) {
+          case 'auth/wrong-password':
+            NgxFormUtils.setErrorUntilChanged(this.passwordFc, error.code);
+            break;
+          default:
+            this.unhandledError = error;
+            break;
+        }
       });
   }
 
+  validateEmail(fc: FormControl):  Promise<ValidationErrors | null> {
+    return new Promise(resolve => {
+      const syncError = Validators.required(fc) || Validators.email(fc);
+      if (syncError) {
+        this.signInMethodsForEmail = [];
+        return resolve(syncError);
+      }
+      const email = fc.value.trim();
+      this.auth.fetchSignInMethodsForEmail(email)
+        .then(results => {
+          this.signInMethodsForEmail = results;
+          if (results.length === 0) {
+            return resolve({'ngx-firebase-auth/user-not-found' : true});
+          }
+          if (results.indexOf('password') === -1) {
+            return resolve({'ngx-firebase-auth/no-password' : true});
+          }
+          resolve(null);
+        })
+        .catch((error) => {
+          const formError = {};
+          formError[error.code] = true;
+          this.signInMethodsForEmail = [];
+          resolve(formError);
+        });
+    });
+  }
 }

@@ -66,7 +66,7 @@ describe('SignOutComponent', () => {
       expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.signOut);
       expect(signOutSpy).toHaveBeenCalledWith();
       tick();
-      expect(navigateSpy).toHaveBeenCalledWith(['../', ngxFirebaseAuthRouteSlugs.signIn], {relativeTo: component.route});
+      expect(navigateSpy).toHaveBeenCalledWith(['../', ngxFirebaseAuthRouteSlugs.signIn]);
     }));
   });
 });
