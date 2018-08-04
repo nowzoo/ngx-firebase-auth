@@ -19,6 +19,7 @@ export enum NgxFirebaseAuthOAuthMethod {
 
 export enum NgxFirebaseAuthRoute {
   none,
+  index,
   signIn,
   oAuthSignIn,
   signUp,
