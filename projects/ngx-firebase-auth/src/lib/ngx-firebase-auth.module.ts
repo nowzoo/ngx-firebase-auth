@@ -14,6 +14,7 @@ import { AlertComponent } from './alert/alert.component';
 import { OobRecoverEmailComponent } from './oob-recover-email/oob-recover-email.component';
 import { AuthComponent } from './auth/auth.component';
 import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @NgModule({
   imports: [
@@ -33,6 +34,7 @@ import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.com
     OobRecoverEmailComponent,
     AuthComponent,
     OobVerifyEmailComponent,
+    ResetPasswordComponent,
   ],
   providers: [
     NgxFirebaseAuthService
