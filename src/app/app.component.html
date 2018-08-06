@@ -1,1 +1,5 @@
+<div class="container">
+  <div *ngIf="!user">No User</div>
+  <div *ngIf="user">{{user.displayName}}</div>
+</div>
 <router-outlet></router-outlet>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit,  Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { auth } from 'firebase/app';
 import { take } from 'rxjs/operators';
@@ -26,7 +26,7 @@ export class OauthSignInComponent implements OnInit {
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
-    private _router: Router
+    private _router: Router,
   ) { }
 
   get options(): INgxFirebaseAuthOptions {
@@ -86,12 +86,16 @@ export class OauthSignInComponent implements OnInit {
           }
         }
       });
+
   }
+
+
 
   handleRedirect(): Promise<boolean> {
     return new Promise(resolve => {
       this.auth.getRedirectResult()
         .then((cred: auth.UserCredential) => {
+          console.log(cred);
           if (cred.user) {
             this.onSuccess(cred);
             resolve(true);
@@ -103,7 +107,10 @@ export class OauthSignInComponent implements OnInit {
           this.onError(error);
           resolve(true);
         });
+
     });
+
+
   }
 
   getProvider(providerId: string): auth.AuthProvider {
