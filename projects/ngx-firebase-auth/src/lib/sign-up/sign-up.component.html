@@ -41,7 +41,7 @@
         </span>
         <span *ngIf="'password'!==id">
           <a
-            [routerLink]="authService.getOauthSignInRouterLink()"
+            [routerLink]="authService.getOAuthSignInRouterLink()"
             [queryParams]="{providerId: id, context: 'signIn', remember: rememberFc.value ? 'local' : 'session'}"
             [attr.title]="'Sign In with ' + id">{{id}}</a>
         </span>

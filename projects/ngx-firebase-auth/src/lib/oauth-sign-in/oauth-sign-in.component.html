@@ -58,8 +58,8 @@
       Woops! An error occurred.
     </p>
     <p class="mb-0">
-      The account associated with the email {{error.email}}
-      is not yet linked to a {{error.credential.providerId}} account.
+      The account associated with the email {{error['email']}}
+      is not yet linked to a {{error['credential'].providerId}} account.
       Please sign in using one of the methods listed below.
     </p>
   </div>
@@ -68,7 +68,7 @@
     <p>
       <a
         [routerLink]="authService.getSignInRouterLink()"
-        [queryParams]="{email: error.email}"
+        [queryParams]="{email: error['email']}"
         class="btn btn-lg btn-block btn-secondary">Email/Password</a>
     </p>
     <p *ngIf="emailOAuthMethods.length > 0">...or...</p>
