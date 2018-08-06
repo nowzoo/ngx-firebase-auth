@@ -1,3 +1,41 @@
-<p>
-  verify-email works!
-</p>
+<div *ngIf="'wait' === screen">
+  <div class="alert alert-light">
+    <p class="mb-0">
+      <i class="fas fa-spin fa-spinner" aria-hidden="true"></i>
+      Please wait...
+    </p>
+  </div>
+</div>
+<div *ngIf="'success' === screen">
+  <div class="alert alert-success">
+    <p>
+      <i class="fas fa-check" aria-hidden="true"></i>
+      <strong>Check Your Inbox</strong>
+    </p>
+    <p class="mb-0">
+      We&rsquo;ve sent an email verification link
+      to you at {{user.email}}.
+    </p>
+  </div>
+  <p>
+    Please allow a few moments for the email to arrive.
+    <a href="#" (click)="submit();$event.preventDefault()">Resend Link</a>
+  </p>
+</div>
+<div *ngIf="'error' === screen">
+  <div class="alert alert-danger">
+    <p>
+      <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+      Woops! An unexpected error occurred.
+    </p>
+    <p>
+      Code: {{error.code}}
+    </p>
+    <p class="mb-0">
+      Message: {{error.message}}
+    </p>
+  </div>
+  <p>
+    <a href="#" (click)="submit();$event.preventDefault()">Try Again</a>
+  </p>
+</div>

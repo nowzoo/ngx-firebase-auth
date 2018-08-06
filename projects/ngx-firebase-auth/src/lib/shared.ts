@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 
 import { UserCredential } from 'firebase/auth';
-import { auth } from 'firebase/app';
+import { auth, User } from 'firebase/app';
 
 
 export interface INgxFirebaseAuthOobResult {
@@ -19,6 +19,7 @@ export enum NgxFirebaseAuthOAuthMethod {
 
 export enum NgxFirebaseAuthRoute {
   none,
+  auth,
   index,
   signIn,
   oAuthSignIn,
@@ -62,3 +63,8 @@ export const ngxFirebaseAuthOAuthProviderNames = {
   'google.com': 'Google',
   'github.com': 'GitHub',
 };
+
+export interface INgxFirebaseActionCodeSuccess {
+  actionCodeInfo: auth.ActionCodeInfo;
+  user: User;
+}

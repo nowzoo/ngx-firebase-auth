@@ -64,10 +64,16 @@ describe('IndexComponent', () => {
     let setRouteSpy;
     let authState$;
     let navigateSpy;
+    let getSignInRouterLinkSpy;
     beforeEach(() => {
+      getSignInRouterLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth', 'sign-in']);
       authState$ = new BehaviorSubject(null);
       setRouteSpy = jasmine.createSpy();
-      spyOnProperty(component, 'authService').and.returnValue({setRoute: setRouteSpy});
+      spyOnProperty(component, 'authService').and.returnValue({
+        setRoute: setRouteSpy,
+        getSignInRouterLink: getSignInRouterLinkSpy,
+        successMessage: null
+      });
       spyOnProperty(component, 'authState').and.returnValue(authState$.asObservable());
       navigateSpy = jasmine.createSpy();
       spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
@@ -75,6 +81,17 @@ describe('IndexComponent', () => {
     it('should set the route', () => {
       component.ngOnInit();
       expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.index);
+    });
+    it('should set successMessage to null if authService.successMessage is null', () => {
+      component.authService.successMessage = null;
+      component.ngOnInit();
+      expect(component.successMessage).toBe(null);
+    });
+    it('should set successMessage to authService.successMessage, then clear authService.successMessage', () => {
+      component.authService.successMessage = 'foo bar';
+      component.ngOnInit();
+      expect(component.successMessage).toBe('foo bar');
+      expect(component.authService.successMessage).toBe(null);
     });
     it('should subscribe and unsubscribe from authState', () => {
       component.ngOnInit();
@@ -87,7 +104,16 @@ describe('IndexComponent', () => {
       component.ngOnInit();
       expect(navigateSpy).not.toHaveBeenCalled();
       authState$.next(null);
-      expect(navigateSpy).toHaveBeenCalledWith(['sign-in'], {relativeTo: component.route});
+      expect(getSignInRouterLinkSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(getSignInRouterLinkSpy.calls.mostRecent().returnValue);
+    });
+    it('should not navigate if the user is signed in', () => {
+      authState$.next({uid: 'a-uid'});
+      component.ngOnInit();
+      expect(navigateSpy).not.toHaveBeenCalled();
+      authState$.next({});
+      expect(getSignInRouterLinkSpy).not.toHaveBeenCalled();
+      expect(navigateSpy).not.toHaveBeenCalled();
     });
   });
 });

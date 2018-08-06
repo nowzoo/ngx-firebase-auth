@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { auth, User } from 'firebase/app';
 import { Observable, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
@@ -21,6 +21,7 @@ import {
 export class IndexComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   user: User = null;
+  successMessage: string = null;
 
   constructor(
     @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
@@ -60,10 +61,12 @@ export class IndexComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.index);
+    this.successMessage = this.authService.successMessage || null;
+    this.authService.successMessage = null;
     this.authState.pipe(takeUntil(this.ngUnsubscribe)).subscribe((user: User) => {
       this.user = user;
       if (! user) {
-        this.router.navigate(['sign-in'], {relativeTo: this.route});
+        this.router.navigate(this.authService.getSignInRouterLink());
       }
     });
   }

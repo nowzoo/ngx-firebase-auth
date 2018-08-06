@@ -109,11 +109,11 @@ describe('VerifyEmailComponent', () => {
       expect(navigateSpy).toHaveBeenCalledWith(['../', 'sign-in'], {relativeTo: component.route});
       expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
     });
-    it('should show success if the user is verified', () => {
+    it('should navigate if the user is verified', () => {
       user.emailVerified = true;
       component.submit();
       authState$.next(user);
-      expect(component.screen).toBe('success');
+      expect(navigateSpy).toHaveBeenCalledWith(['../'], {relativeTo: component.route});
       expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
     });
     it('should call user.sendEmailVerification', () => {

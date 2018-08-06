@@ -8,6 +8,12 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { SignOutComponent } from './sign-out/sign-out.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { OobComponent } from './oob/oob.component';
+import { OobResetPasswordComponent } from './oob-reset-password/oob-reset-password.component';
+import { AlertComponent } from './alert/alert.component';
+import { OobRecoverEmailComponent } from './oob-recover-email/oob-recover-email.component';
+import { AuthComponent } from './auth/auth.component';
+import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.component';
 
 @NgModule({
   imports: [
@@ -21,6 +27,12 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
     SignOutComponent,
     SignUpComponent,
     VerifyEmailComponent,
+    OobComponent,
+    OobResetPasswordComponent,
+    AlertComponent,
+    OobRecoverEmailComponent,
+    AuthComponent,
+    OobVerifyEmailComponent,
   ],
   providers: [
     NgxFirebaseAuthService

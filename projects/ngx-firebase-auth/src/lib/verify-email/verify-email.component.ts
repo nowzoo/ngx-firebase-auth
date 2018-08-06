@@ -76,12 +76,11 @@ export class VerifyEmailComponent implements OnInit {
         }
         this.user = user;
         if (user.emailVerified) {
-          this.screen = 'success';
+          this.router.navigate(['../'], {relativeTo: this.route});
           return;
         }
         user.sendEmailVerification()
           .then(() => {
-            console.log('got here');
             this.screen = 'success';
           })
           .catch((error: auth.Error) => {
