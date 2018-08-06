@@ -35,13 +35,13 @@
       <span *ngFor="let id of signInMethodsForEmail; let isLast = last">
         <span *ngIf="'password'===id">
           <a
-            [routerLink]="['../', 'sign-in']"
+            [routerLink]="authService.getSignInRouterLink()"
             [queryParams]="{email: emailFc.value}"
             title="Sign in with your email and password">Email/Password</a>
         </span>
         <span *ngIf="'password'!==id">
           <a
-            [routerLink]="['../', 'oauth-sign-in']"
+            [routerLink]="authService.getOauthSignInRouterLink()"
             [queryParams]="{providerId: id, context: 'signIn', remember: rememberFc.value ? 'local' : 'session'}"
             [attr.title]="'Sign In with ' + id">{{id}}</a>
         </span>
@@ -114,7 +114,7 @@
   <p *ngFor="let id of options.oAuthMethods">
     <a
       class="btn btn-lg btn-primary"
-      [routerLink]="['../', 'oauth-sign-in']"
+      [routerLink]="authService.getOAuthSignInRouterLink()"
       [queryParams]="{providerId: id, context: 'signUp', remember: rememberFc.value ? 'local' : 'session'}"
       [attr.title]="'Sign In with ' + id">{{id}}</a>
   </p>

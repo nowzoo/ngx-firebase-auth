@@ -81,13 +81,22 @@ describe('VerifyEmailComponent', () => {
     let user;
     let authState$;
     let navigateSpy;
+    let getIndexRouterLinkSpy;
+    let getSignInRouterLinkSpy;
     beforeEach(() => {
       sendEmailVerificationSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
       user = {sendEmailVerification: sendEmailVerificationSpy};
       authState$ = new Subject();
       navigateSpy = jasmine.createSpy();
+      getIndexRouterLinkSpy =
       spyOnProperty(component, 'authState').and.returnValue(authState$.asObservable());
       spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
+      getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
+      getSignInRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth', 'sign-in']);
+      spyOnProperty(component, 'authService').and.returnValue({
+        getIndexRouterLink: getIndexRouterLinkSpy,
+        getSignInRouterLink: getSignInRouterLinkSpy
+      });
     });
     it('should set screen to wait', () => {
       component.screen = 'success';
@@ -102,14 +111,14 @@ describe('VerifyEmailComponent', () => {
     it('should navigate if the user is not signed in', () => {
       component.submit();
       authState$.next(null);
-      expect(navigateSpy).toHaveBeenCalledWith(['../', 'sign-in'], {relativeTo: component.route});
+      expect(navigateSpy).toHaveBeenCalledWith(getSignInRouterLinkSpy.calls.mostRecent().returnValue);
       expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
     });
     it('should navigate if the user is verified', () => {
       user.emailVerified = true;
       component.submit();
       authState$.next(user);
-      expect(navigateSpy).toHaveBeenCalledWith(['../'], {relativeTo: component.route});
+      expect(navigateSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
       expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
     });
     it('should call user.sendEmailVerification', () => {

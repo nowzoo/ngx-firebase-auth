@@ -297,15 +297,16 @@ describe('OauthSignInComponent', () => {
     let pushCredSpy;
     let navSpy;
     let cred;
-    let serviceSpy;
+    let getIndexRouterLinkSpy;
     beforeEach(() => {
       cred = {user: {}};
       pushCredSpy = jasmine.createSpy();
       navSpy = jasmine.createSpy();
-
-      serviceSpy = spyOnProperty(component, 'authService').and.returnValue({
+      getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
+      spyOnProperty(component, 'authService').and.returnValue({
         redirectCancelled: true,
-        pushCred: pushCredSpy
+        pushCred: pushCredSpy,
+        getIndexRouterLink: getIndexRouterLinkSpy
       });
       spyOnProperty(component, 'router').and.returnValue({
         navigate: navSpy
@@ -317,16 +318,14 @@ describe('OauthSignInComponent', () => {
       expect(pushCredSpy).toHaveBeenCalledWith(cred);
     });
     it('should not navigate if the redirect is cancelled', () => {
+      component.authService.redirectCancelled = true;
       component.onSuccess(cred);
       expect(navSpy).not.toHaveBeenCalled();
     });
     it('should navigate if the redirect is not cancelled', () => {
-      serviceSpy.and.returnValue({
-        redirectCancelled: false,
-        pushCred: pushCredSpy
-      });
+      component.authService.redirectCancelled = false;
       component.onSuccess(cred);
-      expect(navSpy).toHaveBeenCalledWith(['../'], {relativeTo: component.route});
+      expect(navSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
     });
   });
 

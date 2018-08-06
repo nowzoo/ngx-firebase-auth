@@ -139,6 +139,7 @@ describe('SignInComponent', () => {
     let signInSpy;
     let pushCredSpy;
     let navigateSpy;
+    let getIndexRouterLinkSpy;
     beforeEach(() => {
       spyOn(component, 'validateEmail').and.callFake(() => Promise.resolve(null));
       pushCredSpy = jasmine.createSpy();
@@ -147,11 +148,15 @@ describe('SignInComponent', () => {
       signInSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(cred));
       setPersistenceSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
       navigateSpy = jasmine.createSpy();
+      getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
       spyOnProperty(component, 'auth').and.returnValue({
         signInWithEmailAndPassword: signInSpy,
         setPersistence: setPersistenceSpy,
       });
-      spyOnProperty(component, 'authService').and.returnValue({pushCred: pushCredSpy});
+      spyOnProperty(component, 'authService').and.returnValue({
+        pushCred: pushCredSpy,
+        getIndexRouterLink: getIndexRouterLinkSpy
+      });
       spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
       component.initFg();
       component.fg.setValue({
@@ -240,7 +245,7 @@ describe('SignInComponent', () => {
       component.authService.redirectCancelled = false;
       component.submit();
       tick();
-      expect(navigateSpy).toHaveBeenCalledWith(['../'], {relativeTo: component.route});
+      expect(navigateSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
     }));
     it('should not navigate if the redirect is cancelled', fakeAsync(() => {
       component.authService.redirectCancelled = true;

@@ -19,14 +19,14 @@
     </ngx-form-error>
     <ngx-form-error [control]="emailFc" key="ngx-firebase-auth/user-not-found">
       We could not find an account associated with {{emailFc.value}}.
-      Please <a [routerLink]="['../', 'sign-up']">sign up for one here</a>.
+      Please <a [routerLink]="authService.getSignUpRouterLink()">sign up for one here</a>.
     </ngx-form-error>
     <ngx-form-error [control]="emailFc" key="ngx-firebase-auth/no-password">
       The account associated with {{emailFc.value}} does not have a password.
       Please sign in using a linked account:
       <span *ngFor="let id of emailOAuthMethods; let isLast = last">
         <a
-          [routerLink]="['../', 'oauth-sign-in']"
+          [routerLink]="authService.getOAuthSignInRouterLink()"
           [queryParams]="{providerId: id, context: 'signIn', remember: rememberFc.value ? 'local' : 'session'}"
           [attr.title]="'Sign In with ' + id">{{id}}</a>
         <span *ngIf="! isLast"> | </span>
@@ -34,7 +34,7 @@
     </ngx-form-error>
     <span class="form-text text-muted" [attr.id]="formId + 'email-help'">
       Don&rsquo;t have an account?
-      <a [routerLink]="['../', 'sign-up']">Sign Up</a>
+      <a [routerLink]="authService.getSignUpRouterLink()">Sign Up</a>
     </span>
   </div> <!-- div class="form-group" (email) -->
   <div class="form-group">
@@ -68,7 +68,7 @@
     </ngx-form-error>
     <span class="form-text text-muted" [attr.id]="formId + 'password-help'">
       Forgot?
-      <a [routerLink]="['../', 'reset-password']">Reset Password</a>
+      <a [routerLink]="authService.getResetPasswordRouterLink()">Reset Password</a>
     </span>
   </div>
   <div class="form-group">
@@ -107,7 +107,7 @@
   <p *ngFor="let id of emailOAuthMethods">
     <a
       class="btn btn-lg btn-primary"
-      [routerLink]="['../', 'oauth-sign-in']"
+      [routerLink]="authService.getOAuthSignInRouterLink()"
       [queryParams]="{providerId: id, context: 'signIn', remember: rememberFc.value ? 'local' : 'session'}"
       [attr.title]="'Sign In with ' + id">{{id}}</a>
   </p>

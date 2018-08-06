@@ -122,7 +122,7 @@ export class SignUpComponent implements OnInit {
       .then(() => {
         this.authService.pushCred(cred);
         if (! this.authService.redirectCancelled) {
-          this.router.navigate(['../'], {relativeTo: this.route});
+          this.router.navigate(this.authService.getIndexRouterLink());
         }
       })
       .catch((error: auth.Error) => {

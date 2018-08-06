@@ -19,13 +19,17 @@ import { OobRecoverEmailComponent } from './oob-recover-email/oob-recover-email.
 import { AuthComponent } from './auth/auth.component';
 import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { OauthSignInComponent } from './oauth-sign-in/oauth-sign-in.component';
 
 import { NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions } from './shared';
 
 const routes: Routes = [
   {path: '', component: AuthComponent, children: [
     {path: 'sign-up', component: SignUpComponent},
-    {path: 'sign-in', component: SignInComponent},
+    {path: 'sign-in', children: [
+      {path: 'oauth', component: OauthSignInComponent},
+      {path: '', component: SignInComponent},
+    ]},
     {path: 'sign-out', component: SignOutComponent},
     {path: 'verify-email', component: VerifyEmailComponent},
     {path: 'reset-password', component: ResetPasswordComponent},
@@ -44,11 +48,12 @@ const routes: Routes = [
     ReactiveFormsModule,
     CommonModule,
     NgxFormModule,
-    RouterModule
+    RouterModule.forChild(routes)
   ],
   declarations: [
     IndexComponent,
     SignInComponent,
+    OauthSignInComponent,
     SignOutComponent,
     SignUpComponent,
     VerifyEmailComponent,

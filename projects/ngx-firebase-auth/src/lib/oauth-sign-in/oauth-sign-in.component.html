@@ -67,7 +67,7 @@
   <div *ngIf="emailHasPasswordMethod">
     <p>
       <a
-        [routerLink]="['../', 'sign-in']"
+        [routerLink]="authService.getSignInRouterLink()"
         [queryParams]="{email: error.email}"
         class="btn btn-lg btn-block btn-secondary">Email/Password</a>
     </p>

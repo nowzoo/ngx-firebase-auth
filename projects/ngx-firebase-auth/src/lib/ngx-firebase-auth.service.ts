@@ -104,6 +104,18 @@ export class NgxFirebaseAuthService {
   getSignInRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['sign-in']);
   }
+
+  getSignUpRouterLink(): string[] {
+    return this.baseRouteSlugs.concat(['sign-up']);
+  }
+
+  getResetPasswordRouterLink(): string[] {
+    return this.baseRouteSlugs.concat(['reset-password']);
+  }
+
+  getOAuthSignInRouterLink(): string[] {
+    return this.baseRouteSlugs.concat(['sign-in', 'oauth']);
+  }
   getSignOutRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['sign-out']);
   }

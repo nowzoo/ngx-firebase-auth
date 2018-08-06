@@ -64,12 +64,12 @@ export class VerifyEmailComponent implements OnInit {
     this.authState.pipe(take(1))
       .subscribe((user: User) => {
         if (! user) {
-          this.router.navigate(['../', 'sign-in'], {relativeTo: this.route});
+          this.router.navigate(this.authService.getSignInRouterLink());
           return;
         }
         this.user = user;
         if (user.emailVerified) {
-          this.router.navigate(['../'], {relativeTo: this.route});
+          this.router.navigate(this.authService.getIndexRouterLink());
           return;
         }
         user.sendEmailVerification()

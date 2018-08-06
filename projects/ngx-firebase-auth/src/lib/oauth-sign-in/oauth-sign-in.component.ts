@@ -153,7 +153,7 @@ export class OauthSignInComponent implements OnInit {
   onSuccess(cred: auth.UserCredential) {
     this.authService.pushCred(cred);
     if (! this.authService.redirectCancelled) {
-      this.router.navigate(['../'], {relativeTo: this.route});
+      this.router.navigate(this.authService.getIndexRouterLink());
     }
   }
   onError(error: auth.Error) {
