@@ -7,8 +7,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
 import {
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs,
-  NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions
+  NgxFirebaseAuthRoute,
+  NGX_FIREBASE_AUTH_OPTIONS,
+  INgxFirebaseAuthOptions
 } from '../shared';
 @Component({
   selector: 'ngx-firebase-auth-sign-up',
@@ -19,6 +20,7 @@ export class SignUpComponent implements OnInit {
 
   private _signInMethodsForEmail: string[] = null;
 
+  showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-sign-up-';
   submitting = false;
   unhandledError: auth.Error = null;
@@ -27,7 +29,6 @@ export class SignUpComponent implements OnInit {
   passwordFc: FormControl;
   rememberFc: FormControl;
   fg: FormGroup;
-  signInRouterLink: string[] = ['../', ngxFirebaseAuthRouteSlugs.signIn];
 
   constructor(
     @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,

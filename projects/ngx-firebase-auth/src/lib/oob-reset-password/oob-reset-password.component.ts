@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
 import {
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs
+  NgxFirebaseAuthRoute
 } from '../shared';
 
 @Component({
@@ -22,6 +22,8 @@ export class OobResetPasswordComponent implements OnInit {
   cred: auth.UserCredential;
   actionCodeInfo: auth.ActionCodeInfo = null;
 
+
+  showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-oob-reset-password-';
   emailFc: FormControl;
   passwordFc: FormControl;

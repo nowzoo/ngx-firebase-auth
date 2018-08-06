@@ -4,13 +4,6 @@ import { UserCredential } from 'firebase/auth';
 import { auth, User } from 'firebase/app';
 
 
-export interface INgxFirebaseAuthOobResult {
-  mode: 'resetPassword' | 'recoverEmail' | 'verifyEmail';
-  code: string;
-  email: string;
-  fromEmail: string;
-  error: auth.Error;
-}
 
 export enum NgxFirebaseAuthOAuthMethod {
   redirect,
@@ -33,18 +26,6 @@ export enum NgxFirebaseAuthRoute {
   verifyEmail
 }
 
-export const ngxFirebaseAuthRouteSlugs = {
-  signIn: 'sign-in',
-  signUp: 'sign-up',
-  signOut: 'sign-out',
-  oAuthSignIn: 'oauth-sign-in',
-  oob: 'oob',
-  oobResetPassword: 'oob-reset-password',
-  oobVerifyEmail: 'oob-verify-email',
-  oobRecoverEmail: 'oob-recover-email',
-  resetPassword: 'reset-password',
-  verifyEmail: 'verify-email'
-};
 
 export interface INgxFirebaseAuthOptions {
   oAuthMethods: string[];

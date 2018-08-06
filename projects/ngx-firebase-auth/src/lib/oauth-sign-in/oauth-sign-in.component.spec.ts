@@ -7,7 +7,7 @@ import { OauthSignInComponent } from './oauth-sign-in.component';
 
 import {
   NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS
+  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
 describe('OauthSignInComponent', () => {
   let component: OauthSignInComponent;

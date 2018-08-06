@@ -7,11 +7,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import {
-  NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute,
-  ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-verify-email',
@@ -25,16 +21,13 @@ export class VerifyEmailComponent implements OnInit {
   error: auth.Error = null;
 
   constructor(
-    @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
     private _router: Router
   ) { }
 
-  get options(): INgxFirebaseAuthOptions {
-    return this._options;
-  }
+
 
   get auth(): auth.Auth {
     return this._afAuth.auth;

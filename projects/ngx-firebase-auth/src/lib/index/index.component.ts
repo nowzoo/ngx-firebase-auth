@@ -10,7 +10,7 @@ import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
 import {
   NgxFirebaseAuthOAuthMethod,
   NgxFirebaseAuthRoute,
-  ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions
+  NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions
 } from '../shared';
 
 @Component({

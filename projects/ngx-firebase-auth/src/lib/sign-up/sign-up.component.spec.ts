@@ -7,7 +7,7 @@ import { SignUpComponent } from './sign-up.component';
 import { auth } from 'firebase/app';
 
 import {
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS
+  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
 describe('SignUpComponent', () => {
   let component: SignUpComponent;

@@ -6,8 +6,7 @@ import { auth } from 'firebase/app';
 import { Subject } from 'rxjs';
 
 import {
-  NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS
+  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
 
 import { VerifyEmailComponent } from './verify-email.component';
@@ -39,9 +38,6 @@ describe('VerifyEmailComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have options', () => {
-    expect(component.options).toBeTruthy();
-  });
 
   it('should have auth', () => {
     expect(component.auth).toBeTruthy();

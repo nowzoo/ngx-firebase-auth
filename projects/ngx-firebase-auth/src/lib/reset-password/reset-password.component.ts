@@ -18,6 +18,7 @@ export class ResetPasswordComponent implements OnInit {
   private _signInMethodsForEmail: string[] = null;
 
   screen: 'form' | 'success' = 'form';
+  showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-reset-password-';
   submitting = false;
   unhandledError: auth.Error = null;

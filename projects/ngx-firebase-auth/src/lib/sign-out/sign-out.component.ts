@@ -4,7 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import {
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs
+  NgxFirebaseAuthRoute
 } from '../shared';
 
 @Component({
@@ -41,7 +41,7 @@ export class SignOutComponent implements OnInit {
     this.authService.setRoute(NgxFirebaseAuthRoute.signOut);
     this.auth.signOut()
       .then(() => {
-        this.router.navigate(['../', ngxFirebaseAuthRouteSlugs.signIn], {relativeTo: this.route});
+        this.router.navigate(this.authService.getSignInRouterLink());
       });
   }
 

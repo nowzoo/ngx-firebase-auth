@@ -8,7 +8,6 @@ import { auth } from 'firebase/app';
 import {
   NgxFirebaseAuthOAuthMethod,
   NgxFirebaseAuthRoute,
-  ngxFirebaseAuthRouteSlugs,
   NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
 

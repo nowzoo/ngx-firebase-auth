@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import {
   NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs, NGX_FIREBASE_AUTH_OPTIONS
+  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
 import { IndexComponent } from './index.component';
 

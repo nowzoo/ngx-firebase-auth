@@ -3,7 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  NgxFirebaseAuthRoute, ngxFirebaseAuthRouteSlugs
+  NgxFirebaseAuthRoute
 } from '../shared';
 
 import { SignOutComponent } from './sign-out.component';
@@ -52,12 +52,17 @@ describe('SignOutComponent', () => {
   describe('ngOnInit()', () => {
     let setRouteSpy;
     let signOutSpy;
+    let getSignInRouterLinkSpy;
     let navigateSpy;
     beforeEach(() => {
       setRouteSpy = jasmine.createSpy();
       signOutSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
       navigateSpy = jasmine.createSpy();
-      spyOnProperty(component, 'authService').and.returnValue({setRoute: setRouteSpy});
+      getSignInRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth', 'sign-in']);
+      spyOnProperty(component, 'authService').and.returnValue({
+        setRoute: setRouteSpy,
+        getSignInRouterLink: getSignInRouterLinkSpy
+      });
       spyOnProperty(component, 'auth').and.returnValue({signOut: signOutSpy});
       spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
     });
@@ -66,7 +71,12 @@ describe('SignOutComponent', () => {
       expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.signOut);
       expect(signOutSpy).toHaveBeenCalledWith();
       tick();
-      expect(navigateSpy).toHaveBeenCalledWith(['../', ngxFirebaseAuthRouteSlugs.signIn], {relativeTo: component.route});
+    }));
+    it('should navigate', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      expect(getSignInRouterLinkSpy).toHaveBeenCalled();
+      expect(navigateSpy).toHaveBeenCalledWith(getSignInRouterLinkSpy.calls.mostRecent().returnValue);
     }));
   });
 });
