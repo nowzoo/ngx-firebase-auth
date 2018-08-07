@@ -20,7 +20,7 @@ import { AuthComponent } from './auth/auth.component';
 import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { OauthSignInComponent } from './oauth-sign-in/oauth-sign-in.component';
-
+import { AngularFireAuthModule } from 'angularfire2/auth';
 import { NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions } from './shared';
 
 const routes: Routes = [
@@ -46,6 +46,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     ReactiveFormsModule,
+    AngularFireAuthModule,
     CommonModule,
     NgxFormModule,
     RouterModule.forChild(routes)

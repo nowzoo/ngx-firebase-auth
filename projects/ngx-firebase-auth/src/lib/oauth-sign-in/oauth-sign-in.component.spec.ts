@@ -298,8 +298,10 @@ describe('OauthSignInComponent', () => {
     let navSpy;
     let cred;
     let getIndexRouterLinkSpy;
+    let signInWithCredentialSpy;
     beforeEach(() => {
-      cred = {user: {}};
+      signInWithCredentialSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
+      cred = {user: {}, credential: {}};
       pushCredSpy = jasmine.createSpy();
       navSpy = jasmine.createSpy();
       getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
@@ -311,22 +313,28 @@ describe('OauthSignInComponent', () => {
       spyOnProperty(component, 'router').and.returnValue({
         navigate: navSpy
       });
-
+      spyOnProperty(component, 'auth').and.returnValue({
+        signInAndRetrieveDataWithCredential: signInWithCredentialSpy
+      });
     });
-    it('should push cred', () => {
+    it('should push cred', fakeAsync(() => {
       component.onSuccess(cred);
+      expect(signInWithCredentialSpy).toHaveBeenCalledWith(cred.credential);
+      tick();
       expect(pushCredSpy).toHaveBeenCalledWith(cred);
-    });
-    it('should not navigate if the redirect is cancelled', () => {
+    }));
+    it('should not navigate if the redirect is cancelled', fakeAsync(() => {
       component.authService.redirectCancelled = true;
       component.onSuccess(cred);
+      tick();
       expect(navSpy).not.toHaveBeenCalled();
-    });
-    it('should navigate if the redirect is not cancelled', () => {
+    }));
+    it('should navigate if the redirect is not cancelled', fakeAsync(() => {
       component.authService.redirectCancelled = false;
       component.onSuccess(cred);
+      tick();
       expect(navSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
-    });
+    }));
   });
 
 

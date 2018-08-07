@@ -1,4 +1,4 @@
-import { Component, OnInit,  Inject } from '@angular/core';
+import { Component, OnInit,  Inject, NgZone } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { auth } from 'firebase/app';
 import { take } from 'rxjs/operators';
@@ -27,6 +27,7 @@ export class OauthSignInComponent implements OnInit {
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
     private _router: Router,
+    private _ngZone: NgZone
   ) { }
 
   get options(): INgxFirebaseAuthOptions {
@@ -95,7 +96,6 @@ export class OauthSignInComponent implements OnInit {
     return new Promise(resolve => {
       this.auth.getRedirectResult()
         .then((cred: auth.UserCredential) => {
-          console.log(cred);
           if (cred.user) {
             this.onSuccess(cred);
             resolve(true);
@@ -157,11 +157,21 @@ export class OauthSignInComponent implements OnInit {
         .catch((error) => this.onError(error));
     }
   }
+
+
   onSuccess(cred: auth.UserCredential) {
-    this.authService.pushCred(cred);
-    if (! this.authService.redirectCancelled) {
-      this.router.navigate(this.authService.getIndexRouterLink());
-    }
+    this._ngZone.runOutsideAngular(() => {
+      this.auth.signInAndRetrieveDataWithCredential(cred.credential)
+        .then(() => {
+          this._ngZone.run(() => {
+            this.authService.pushCred(cred);
+            if (! this.authService.redirectCancelled) {
+              this.authService.successMessage = `Welcome, ${cred.user.displayName}! You&rsquo;re signed in.`;
+              this.router.navigate(this.authService.getIndexRouterLink());
+            }
+          });
+        });
+    });
   }
   onError(error: auth.Error) {
     const email = (error as any).email || null;
