@@ -19,7 +19,7 @@ import {
 export class OauthSignInComponent implements OnInit {
   private _signInMethodsForEmail: string[] = null;
   error: auth.Error = null;
-  screen: 'wait' | 'error' | 'accountExistsError' | 'popupBlockedError' | 'popupCancelledError' | 'form' = 'wait';
+  screen: 'wait' | 'error' | 'success' | 'accountExistsError' | 'popupBlockedError' | 'popupCancelledError' | 'form' = 'wait';
   currentProviderId: string = null;
   constructor(
     @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,

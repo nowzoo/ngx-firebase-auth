@@ -1,0 +1,15 @@
+<div *ngIf="'wait' === screen">
+  <ngx-firebase-auth-alert context="wait" >Please wait...</ngx-firebase-auth-alert>
+</div>
+<div *ngIf="'methods' === screen">
+  <ngx-firebase-auth-sign-in-methods-form
+    [email]="email"
+    (error)="onUnhandledError($event)"
+    (success)="onSignInMethodsResult($event)"></ngx-firebase-auth-sign-in-methods-form>
+</div>
+<div *ngIf="'signIn' === screen">
+  <ngx-firebase-auth-sign-in-methods-form
+    [email]="email"
+    (error)="onUnhandledError($event)"
+    (success)="onSignInMethodsResult($event)"></ngx-firebase-auth-sign-in-methods-form>
+</div>

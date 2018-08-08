@@ -22,6 +22,11 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { OauthSignInComponent } from './oauth-sign-in/oauth-sign-in.component';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions } from './shared';
+import { UnifiedSignInComponent } from './unified-sign-in/unified-sign-in.component';
+import { SignInEmailFormComponent } from './sign-in-email-form/sign-in-email-form.component';
+import { SignInMethodsFormComponent } from './unified-sign-in/sign-in-methods-form/sign-in-methods-form.component';
+import { SignInPasswordFormComponent } from './unified-sign-in/sign-in-password-form/sign-in-password-form.component';
+import { SignUpPasswordFormComponent } from './unified-sign-in/sign-up-password-form/sign-up-password-form.component';
 
 const routes: Routes = [
   {path: '', component: AuthComponent, children: [
@@ -65,6 +70,11 @@ const routes: Routes = [
     AuthComponent,
     OobVerifyEmailComponent,
     ResetPasswordComponent,
+    UnifiedSignInComponent,
+    SignInEmailFormComponent,
+    SignInMethodsFormComponent,
+    SignInPasswordFormComponent,
+    SignUpPasswordFormComponent,
   ],
   providers: [
     NgxFirebaseAuthService

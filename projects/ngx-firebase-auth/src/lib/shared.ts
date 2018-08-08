@@ -49,3 +49,8 @@ export interface INgxFirebaseActionCodeSuccess {
   actionCodeInfo: auth.ActionCodeInfo;
   user: User;
 }
+
+export interface INgxFirebaseAuthMethodsForEmailResult {
+  email: string;
+  methods: string[];
+}

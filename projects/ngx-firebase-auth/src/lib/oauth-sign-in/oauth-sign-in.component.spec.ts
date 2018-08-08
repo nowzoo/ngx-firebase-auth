@@ -3,12 +3,15 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { auth } from 'firebase/app';
-import { OauthSignInComponent } from './oauth-sign-in.component';
-
 import {
   NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
+  NgxFirebaseAuthRoute,
+  NGX_FIREBASE_AUTH_OPTIONS
 } from '../shared';
+
+import { OauthSignInComponent } from './oauth-sign-in.component';
+
+
 describe('OauthSignInComponent', () => {
   let component: OauthSignInComponent;
   let fixture: ComponentFixture<OauthSignInComponent>;
