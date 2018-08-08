@@ -13,3 +13,9 @@
     (error)="onUnhandledError($event)"
     (success)="onSignInMethodsResult($event)"></ngx-firebase-auth-sign-in-methods-form>
 </div>
+<div *ngIf="'signUp' === screen">
+  <ngx-firebase-auth-sign-in-methods-form
+    [email]="email"
+    (error)="onUnhandledError($event)"
+    (success)="onSignInMethodsResult($event)"></ngx-firebase-auth-sign-in-methods-form>
+</div>
