@@ -1,3 +1,30 @@
-<p>
-  oob-verify-email works!
-</p>
+<div *ngIf="'wait' === screen">
+  <ngx-firebase-auth-alert context="wait">Please wait...</ngx-firebase-auth-alert>
+</div>
+<div *ngIf="'error' === screen">
+  <ngx-firebase-auth-alert context="error">
+    <div [ngSwitch]="unhandledError.code">
+      <p *ngSwitchCase="'auth/expired-action-code'" class="mb-0">
+        The verify email link you used has expired.
+      </p>
+      <ng-container *ngSwitchCase="'auth/invalid-action-code'">
+        <p>The verify email link you used is invalid.</p>
+        <p class="mb-0">This could be because you have already used it once.</p>
+      </ng-container>
+      <ng-container *ngSwitchDefault>
+        <p>An unexpected error occurred.</p>
+        <p>Code: {{unhandledError.code}}</p>
+        <p class="mb-0">Message: {{unhandledError.message}}</p>
+      </ng-container>
+    </div>
+  </ngx-firebase-auth-alert>
+  <p class="text-muted">
+    <a [routerLink]="authService.getVerifyEmailRouterLink()">Click here</a> to
+    get a fresh verify email link.
+  </p>
+</div>
+<div *ngIf="'success'===screen">
+  <ngx-firebase-auth-alert context="success">
+    The email address {{actionCodeInfo.data.email}} has been verified.
+  </ngx-firebase-auth-alert>
+</div>

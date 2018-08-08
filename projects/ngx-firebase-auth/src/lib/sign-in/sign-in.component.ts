@@ -3,12 +3,10 @@ import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/f
 import { auth } from 'firebase/app';
 import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import {
-  NgxFirebaseAuthRoute
-} from '../shared';
+import { NgxFormUtils } from '@nowzoo/ngx-form';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-sign-in',
@@ -17,12 +15,12 @@ import {
 })
 export class SignInComponent implements OnInit {
 
-  private _signInMethodsForEmail: string[] = null;
-
+  screen: 'form' | 'success' | 'error' = 'form';
   showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-sign-in-';
   submitting = false;
   unhandledError: auth.Error = null;
+  cred: auth.UserCredential = null;
   emailFc: FormControl;
   passwordFc: FormControl;
   rememberFc: FormControl;
@@ -31,8 +29,7 @@ export class SignInComponent implements OnInit {
   constructor(
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
-    private _route: ActivatedRoute,
-    private _router: Router
+    private _route: ActivatedRoute
   ) { }
 
   get auth(): auth.Auth {
@@ -51,30 +48,7 @@ export class SignInComponent implements OnInit {
     return this.route.snapshot.queryParams;
   }
 
-  get router(): Router {
-    return this._router;
-  }
 
-  get signInMethodsForEmail(): string[] | null {
-    return this._signInMethodsForEmail;
-  }
-  set signInMethodsForEmail(methods: string[] | null) {
-    this._signInMethodsForEmail = methods;
-  }
-
-  get emailHasPasswordMethod(): boolean {
-    if (! this.signInMethodsForEmail) {
-      return false;
-    }
-    return this.signInMethodsForEmail.indexOf('password') !== -1;
-  }
-
-  get emailOAuthMethods(): string[] {
-    if (! this.signInMethodsForEmail) {
-      return [];
-    }
-    return this.signInMethodsForEmail.filter(id => 'password' !== id);
-  }
 
 
 
@@ -83,12 +57,22 @@ export class SignInComponent implements OnInit {
     this.initFg();
   }
   initFg() {
-    this.emailFc = new FormControl( this.queryParams.email || '', {asyncValidators: this.validateEmail.bind(this), updateOn: 'blur'});
+    this.emailFc = new FormControl(
+      this.queryParams.email || '',
+      {asyncValidators: this.authService.emailHasPasswordValidator, updateOn: 'blur'}
+    );
     this.passwordFc = new FormControl('', {validators: [Validators.required]});
     this.rememberFc = new FormControl(true);
     this.fg = new FormGroup({
        email: this.emailFc, password: this.passwordFc, remember: this.rememberFc
     });
+  }
+
+  reset() {
+    this.cred = null;
+    this.unhandledError = null;
+    this.submitting = false;
+    this.screen = 'form';
   }
 
 
@@ -98,18 +82,15 @@ export class SignInComponent implements OnInit {
     const email = this.emailFc.value.trim();
     const password = this.passwordFc.value;
     const persistence = this.rememberFc.value === false ? auth.Auth.Persistence.SESSION : auth.Auth.Persistence.LOCAL;
-    let cred: auth.UserCredential;
     return this.auth.signInWithEmailAndPassword(email, password)
       .then((result: auth.UserCredential) => {
-        cred = result;
+        this.cred = result;
         return this.auth.setPersistence(persistence);
       })
       .then(() => {
-        this.authService.pushCred(cred);
-        if (! this.authService.redirectCancelled) {
-          this.authService.successMessage = `Welcome, ${cred.user.displayName}! You&rsquo;re signed in.`;
-          this.router.navigate(this.authService.getIndexRouterLink());
-        }
+        this.authService.pushSignInSuccess(this.cred);
+        this.screen = 'success';
+        this.submitting = false;
       })
       .catch((error: auth.Error) => {
         this.submitting = false;
@@ -119,36 +100,10 @@ export class SignInComponent implements OnInit {
             break;
           default:
             this.unhandledError = error;
+            this.screen = 'error';
             break;
         }
       });
   }
 
-  validateEmail(fc: FormControl):  Promise<ValidationErrors | null> {
-    return new Promise(resolve => {
-      const syncError = Validators.required(fc) || Validators.email(fc);
-      if (syncError) {
-        this.signInMethodsForEmail = [];
-        return resolve(syncError);
-      }
-      const email = fc.value.trim();
-      this.auth.fetchSignInMethodsForEmail(email)
-        .then(results => {
-          this.signInMethodsForEmail = results;
-          if (results.length === 0) {
-            return resolve({'ngx-firebase-auth/user-not-found' : true});
-          }
-          if (results.indexOf('password') === -1) {
-            return resolve({'ngx-firebase-auth/no-password' : true});
-          }
-          resolve(null);
-        })
-        .catch((error) => {
-          const formError = {};
-          formError[error.code] = true;
-          this.signInMethodsForEmail = [];
-          resolve(formError);
-        });
-    });
-  }
 }

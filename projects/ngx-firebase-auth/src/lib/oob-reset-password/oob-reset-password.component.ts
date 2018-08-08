@@ -3,12 +3,10 @@ import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/f
 import { auth } from 'firebase/app';
 import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import {
-  NgxFirebaseAuthRoute
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-oob-reset-password',
@@ -17,8 +15,8 @@ import {
 })
 export class OobResetPasswordComponent implements OnInit {
 
-  screen: 'wait' | 'form' | 'error' = 'wait';
-  error: auth.Error = null;
+  screen: 'wait' | 'form' | 'error' | 'success' = 'wait';
+  unhandledError: auth.Error = null;
   cred: auth.UserCredential;
   actionCodeInfo: auth.ActionCodeInfo = null;
 
@@ -36,7 +34,6 @@ export class OobResetPasswordComponent implements OnInit {
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
-    private _router: Router
   ) { }
 
   get auth(): auth.Auth {
@@ -55,9 +52,6 @@ export class OobResetPasswordComponent implements OnInit {
     return this.route.snapshot.queryParams;
   }
 
-  get router(): Router {
-    return this._router;
-  }
 
   initFg() {
     this.emailFc = new FormControl('');
@@ -82,14 +76,14 @@ export class OobResetPasswordComponent implements OnInit {
         this.screen = 'form';
       })
       .catch((error: auth.Error) => {
-        this.error = error;
+        this.unhandledError = error;
         this.screen = 'error';
       });
   }
 
   submit() {
     this.submitting = true;
-    this.error = null;
+    this.unhandledError = null;
     const oobCode = this.queryParams.oobCode;
     const email = this.emailFc.value;
     const password = this.passwordFc.value;
@@ -106,11 +100,8 @@ export class OobResetPasswordComponent implements OnInit {
         return this.authService.pushActionCodeSuccess(this.actionCodeInfo);
       })
       .then(() => {
-        this.screen = null;
-        if (! this.authService.redirectCancelled) {
-          this.authService.successMessage = `Your new password has been saved and you are signed in.`;
-          this.router.navigate(this.authService.getIndexRouterLink());
-        }
+        this.submitting = false;
+        this.screen = 'success';
       })
       .catch((error: auth.Error) => {
         switch (error.code) {
@@ -118,7 +109,7 @@ export class OobResetPasswordComponent implements OnInit {
             NgxFormUtils.setErrorUntilChanged(this.passwordFc, error.code);
             break;
           default:
-            this.error = error;
+            this.unhandledError = error;
             this.screen = 'error';
             break;
         }

@@ -1,1 +1,10 @@
-<ngx-firebase-auth-alert context="wait">Please wait...</ngx-firebase-auth-alert>
+
+<div *ngIf="'wait' === screen">
+  <ngx-firebase-auth-alert context="wait">Please wait...</ngx-firebase-auth-alert>
+</div>
+
+<div *ngIf="'error' === screen">
+  <ngx-firebase-auth-alert context="error">
+    Woops! it looks like you got here by accident.
+  </ngx-firebase-auth-alert>
+</div>

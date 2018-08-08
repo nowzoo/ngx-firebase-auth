@@ -2,13 +2,10 @@ import {  ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testi
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { SignInComponent } from './sign-in.component';
 import { auth } from 'firebase/app';
-
-import {
-  NgxFirebaseAuthRoute
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 describe('SignInComponent', () => {
   let component: SignInComponent;
   let fixture: ComponentFixture<SignInComponent>;
@@ -22,7 +19,6 @@ describe('SignInComponent', () => {
         {provide: AngularFireAuth, useValue: {auth: {}}},
         {provide: NgxFirebaseAuthService, useValue: {}},
         {provide: ActivatedRoute, useValue: {snapshot: {queryParams: {}}} },
-        {provide: Router, useValue: {}},
       ]
     })
     .overrideTemplate(SignInComponent, '')
@@ -47,9 +43,7 @@ describe('SignInComponent', () => {
   it('should have queryParams', () => {
     expect(component.queryParams).toBeTruthy();
   });
-  it('should have router', () => {
-    expect(component.router).toBeTruthy();
-  });
+
   it('should have formId', () => {
     expect(component.formId).toBeTruthy();
   });
@@ -60,34 +54,38 @@ describe('SignInComponent', () => {
     expect(component.unhandledError).toBe(null);
   });
 
-  it('should have signInMethodsForEmail', () => {
-    expect(component.signInMethodsForEmail).toBe(null);
-    component.signInMethodsForEmail = ['twitter.com'];
-    expect(component.signInMethodsForEmail).toEqual(['twitter.com']);
+  describe('reset()', () => {
+    it('should set cred to null', () => {
+      component.cred = {} as any;
+      component.reset();
+      expect(component.cred).toBe(null);
+    });
+    it('should set unhandledError to null', () => {
+      component.unhandledError = {} as any;
+      component.reset();
+      expect(component.unhandledError).toBe(null);
+    });
+    it('should set submitting to false', () => {
+      component.submitting = true;
+      component.reset();
+      expect(component.submitting).toBe(false);
+    });
+    it('should set screen to form', () => {
+      component.screen = 'error';
+      component.reset();
+      expect(component.screen).toBe('form');
+    });
   });
 
-  it('should have emailHasPasswordMethod', () => {
-    expect(component.emailHasPasswordMethod).toBe(false);
-    component.signInMethodsForEmail = ['twitter.com'];
-    expect(component.emailHasPasswordMethod).toBe(false);
-    component.signInMethodsForEmail = ['twitter.com', 'password'];
-    expect(component.emailHasPasswordMethod).toBe(true);
-  });
-  it('should have emailOAuthMethods', () => {
-    expect(component.emailOAuthMethods).toEqual([]);
-    component.signInMethodsForEmail = ['twitter.com'];
-    expect(component.emailOAuthMethods).toEqual(['twitter.com']);
-    component.signInMethodsForEmail = ['twitter.com', 'password'];
-    expect(component.emailOAuthMethods).toEqual(['twitter.com']);
-    component.signInMethodsForEmail = ['twitter.com', 'password', 'facebook.com'];
-    expect(component.emailOAuthMethods).toEqual(['twitter.com', 'facebook.com']);
-    component.signInMethodsForEmail = [ 'password'];
-    expect(component.emailOAuthMethods).toEqual([]);
-  });
+
   describe('initFg()', () => {
+    let validateEmailHasPasswordSpy;
     beforeEach(() => {
+      validateEmailHasPasswordSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(null));
+      spyOnProperty(component, 'authService').and.returnValue({
+        emailHasPasswordValidator: validateEmailHasPasswordSpy
+      });
       component.initFg();
-      spyOn(component, 'validateEmail').and.callFake(() => Promise.resolve(null));
     });
     it('should set emailFc', () => {
       expect(component.emailFc).toEqual(jasmine.any(FormControl));
@@ -137,27 +135,24 @@ describe('SignInComponent', () => {
     let cred;
     let setPersistenceSpy;
     let signInSpy;
-    let pushCredSpy;
-    let navigateSpy;
-    let getIndexRouterLinkSpy;
+    let pushSignInSuccessSpy;
+    let validateEmailHasPasswordSpy;
     beforeEach(() => {
-      spyOn(component, 'validateEmail').and.callFake(() => Promise.resolve(null));
-      pushCredSpy = jasmine.createSpy();
+      validateEmailHasPasswordSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(null));
+      pushSignInSuccessSpy = jasmine.createSpy();
       user = {};
       cred = {user: user};
       signInSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(cred));
       setPersistenceSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
-      navigateSpy = jasmine.createSpy();
-      getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
+
       spyOnProperty(component, 'auth').and.returnValue({
         signInWithEmailAndPassword: signInSpy,
         setPersistence: setPersistenceSpy,
       });
       spyOnProperty(component, 'authService').and.returnValue({
-        pushCred: pushCredSpy,
-        getIndexRouterLink: getIndexRouterLinkSpy
+        pushSignInSuccess: pushSignInSuccessSpy,
+        emailHasPasswordValidator: validateEmailHasPasswordSpy
       });
-      spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
       component.initFg();
       component.fg.setValue({
         email: 'foo@bar.com',
@@ -197,16 +192,27 @@ describe('SignInComponent', () => {
       tick();
       expect(component.unhandledError).toBe(error);
     }));
-    it('should call authService.pushCred', fakeAsync(() => {
+    it('should call authService.pushSignInSuccess', fakeAsync(() => {
       component.submit();
       tick();
-      expect(pushCredSpy).toHaveBeenCalledWith(cred);
+      expect(pushSignInSuccessSpy).toHaveBeenCalledWith(cred);
     }));
     it('should set submitting on success', fakeAsync(() => {
       component.submit();
       expect(component.submitting).toBe(true);
       tick();
-      expect(component.submitting).toBe(true);
+      expect(component.submitting).toBe(false);
+    }));
+    it('should set submitting on success', fakeAsync(() => {
+      component.submit();
+      expect(component.cred).toBe(null);
+      tick();
+      expect(component.cred).toBe(cred);
+    }));
+    it('should set screen on success', fakeAsync(() => {
+      component.submit();
+      tick();
+      expect(component.screen).toBe('success');
     }));
     it('should set unhandledError to null on success', fakeAsync(() => {
       component.unhandledError = {} as any;
@@ -232,6 +238,7 @@ describe('SignInComponent', () => {
       expect(component.unhandledError).toBe(null);
       component.passwordFc.setValue('');
       expect(component.passwordFc.hasError('auth/wrong-password')).toBe(false);
+      expect(component.screen).toBe('form');
     }));
     it('should handle an unknown error auth/foo', fakeAsync(() => {
       component.unhandledError = {} as any;
@@ -240,84 +247,8 @@ describe('SignInComponent', () => {
       component.submit();
       tick();
       expect(component.unhandledError).toBe(error);
+      expect(component.screen).toBe('error');
     }));
-    it('should navigate if the redirect is not cancelled', fakeAsync(() => {
-      component.authService.redirectCancelled = false;
-      component.submit();
-      tick();
-      expect(navigateSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
-    }));
-    it('should not navigate if the redirect is cancelled', fakeAsync(() => {
-      component.authService.redirectCancelled = true;
-      component.submit();
-      tick();
-      expect(navigateSpy).not.toHaveBeenCalled();
-    }));
-  });
 
-  describe('validateEmail', () => {
-    let emailFc: FormControl;
-    let fetchSignInMethodsForEmailSpy;
-    let validateSpy;
-    beforeEach(() => {
-      validateSpy = spyOn(component, 'validateEmail').and.callThrough();
-      fetchSignInMethodsForEmailSpy = jasmine.createSpy();
-      emailFc = new FormControl('', {
-        asyncValidators: [component.validateEmail.bind(component)]
-      });
-      spyOnProperty(component, 'auth').and.returnValue({
-        fetchSignInMethodsForEmail: fetchSignInMethodsForEmailSpy
-      });
-    });
-    it('should be required error if control is empty', fakeAsync(() => {
-      emailFc.setValue('');
-      tick();
-      expect(emailFc.errors).toEqual({required: true});
-      expect(component.signInMethodsForEmail).toEqual([]);
-      expect(validateSpy).toHaveBeenCalled();
-      expect(fetchSignInMethodsForEmailSpy).not.toHaveBeenCalled();
-    }));
-    it('should be email error if control is not an email', fakeAsync(() => {
-      emailFc.setValue('foo');
-      tick();
-      expect(emailFc.errors).toEqual({email: true});
-      expect(component.signInMethodsForEmail).toEqual([]);
-      expect(validateSpy).toHaveBeenCalled();
-      expect(fetchSignInMethodsForEmailSpy).not.toHaveBeenCalled();
-    }));
-    it('should be error ngx-firebase-auth/user-not-found if the methods are empty', fakeAsync(() => {
-      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve([]));
-      emailFc.setValue('foo@bar.com');
-      tick();
-      expect(emailFc.errors).toEqual({'ngx-firebase-auth/user-not-found': true});
-      expect(component.signInMethodsForEmail).toEqual([]);
-      expect(validateSpy).toHaveBeenCalled();
-      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
-    }));
-    it('should be error ngx-firebase-auth/no-password if the methods do not have password', fakeAsync(() => {
-      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve(['twitter.com']));
-      emailFc.setValue('foo@bar.com');
-      tick();
-      expect(component.signInMethodsForEmail).toEqual(['twitter.com']);
-      expect(emailFc.errors).toEqual({'ngx-firebase-auth/no-password': true});
-      expect(validateSpy).toHaveBeenCalled();
-      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
-    }));
-    it('should be null if the methods has password', fakeAsync(() => {
-      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.resolve(['twitter.com', 'password']));
-      emailFc.setValue('foo@bar.com');
-      tick();
-      expect(emailFc.errors).toEqual(null);
-      expect(component.signInMethodsForEmail).toEqual(['twitter.com', 'password']);
-      expect(validateSpy).toHaveBeenCalled();
-      expect(fetchSignInMethodsForEmailSpy).toHaveBeenCalledWith('foo@bar.com');
-    }));
-    it('should be whatever code the api call rejects with', fakeAsync(() => {
-      fetchSignInMethodsForEmailSpy.and.callFake(() => Promise.reject({code: 'auth/invalid-email'}));
-      emailFc.setValue('foo@bar.com');
-      tick();
-      expect(component.signInMethodsForEmail).toEqual([]);
-      expect(emailFc.errors).toEqual({'auth/invalid-email': true});
-    }));
   });
 });

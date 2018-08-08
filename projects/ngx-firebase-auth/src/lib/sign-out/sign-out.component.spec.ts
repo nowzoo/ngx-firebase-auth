@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import {
   NgxFirebaseAuthRoute
 } from '../shared';
@@ -20,7 +20,6 @@ describe('SignOutComponent', () => {
       providers: [
         {provide: AngularFireAuth, useValue: {auth: {}}},
         {provide: NgxFirebaseAuthService, useValue: {}},
-        {provide: ActivatedRoute, useValue: {}},
         {provide: Router, useValue: {}},
       ]
     })
@@ -41,9 +40,7 @@ describe('SignOutComponent', () => {
     it('should have authService', () => {
       expect(component.authService).toBeTruthy();
     });
-    it('should have route', () => {
-      expect(component.route).toBeTruthy();
-    });
+
     it('should have router', () => {
       expect(component.router).toBeTruthy();
     });

@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { auth } from 'firebase/app';
-import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import {
-  NgxFirebaseAuthRoute, INgxFirebaseActionCodeSuccess
-} from '../shared';
+import { NgxFirebaseAuthRoute, INgxFirebaseActionCodeSuccess } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-oob-verify-email',
@@ -16,18 +13,16 @@ import {
 })
 export class OobVerifyEmailComponent implements OnInit {
 
-  screen: 'wait' | 'error' = 'wait';
-  error: auth.Error = null;
-  cred: auth.UserCredential;
+  screen: 'wait' | 'error' | 'success' = 'wait';
+  unhandledError: auth.Error = null;
   actionCodeInfo: auth.ActionCodeInfo = null;
-
+  actionCodeSuccess: INgxFirebaseActionCodeSuccess = null;
 
 
   constructor(
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
-    private _router: Router
   ) { }
 
   get auth(): auth.Auth {
@@ -46,11 +41,6 @@ export class OobVerifyEmailComponent implements OnInit {
     return this.route.snapshot.queryParams;
   }
 
-  get router(): Router {
-    return this._router;
-  }
-
-
 
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.oobVerifyEmail);
@@ -61,34 +51,25 @@ export class OobVerifyEmailComponent implements OnInit {
         this.submit();
       })
       .catch((error: auth.Error) => {
-        this.error = error;
+        this.unhandledError = error;
         this.screen = 'error';
       });
   }
 
   submit() {
-    this.error = null;
+    this.unhandledError = null;
+    this.actionCodeSuccess = null;
     const oobCode = this.queryParams.oobCode;
     this.auth.applyActionCode(oobCode)
       .then(() => {
         return this.authService.pushActionCodeSuccess(this.actionCodeInfo);
       })
       .then((success: INgxFirebaseActionCodeSuccess) => {
-        this.screen = null;
-        if (! this.authService.redirectCancelled) {
-          this.authService.successMessage = `Your email "${this.actionCodeInfo.data.email}" has been verified.`;
-          if (success.user) {
-            this.router.navigate(this.authService.getIndexRouterLink());
-          } else {
-            this.router.navigate(
-              this.authService.getSignInRouterLink(),
-              {queryParams: {email: this.actionCodeInfo.data.email}}
-            );
-          }
-        }
+        this.actionCodeSuccess = success;
+        this.screen = 'success';
       })
       .catch((error: auth.Error) => {
-        this.error = error;
+        this.unhandledError = error;
         this.screen = 'error';
       });
   }

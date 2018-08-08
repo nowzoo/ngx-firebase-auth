@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import { auth } from 'firebase/app';
-import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
+import { ActivatedRoute } from '@angular/router';
+import { NgxFormUtils } from '@nowzoo/ngx-form';
 import { NgxFirebaseAuthRoute } from '../shared';
+import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
+
 
 @Component({
   selector: 'ngx-firebase-auth-reset-password',
@@ -15,9 +15,8 @@ import { NgxFirebaseAuthRoute } from '../shared';
 })
 export class ResetPasswordComponent implements OnInit {
 
-  private _signInMethodsForEmail: string[] = null;
 
-  screen: 'form' | 'success' = 'form';
+  screen: 'form' | 'success' | 'error' = 'form';
   showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-reset-password-';
   submitting = false;
@@ -30,7 +29,6 @@ export class ResetPasswordComponent implements OnInit {
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
-    private _router: Router
   ) { }
 
   get auth(): auth.Auth {
@@ -49,37 +47,15 @@ export class ResetPasswordComponent implements OnInit {
     return this.route.snapshot.queryParams;
   }
 
-  get router(): Router {
-    return this._router;
-  }
 
-  get signInMethodsForEmail(): string[] | null {
-    return this._signInMethodsForEmail;
-  }
-  set signInMethodsForEmail(methods: string[] | null) {
-    this._signInMethodsForEmail = methods;
-  }
-
-  get emailHasPasswordMethod(): boolean {
-    if (! this.signInMethodsForEmail) {
-      return false;
-    }
-    return this.signInMethodsForEmail.indexOf('password') !== -1;
-  }
-
-  get emailOAuthMethods(): string[] {
-    if (! this.signInMethodsForEmail) {
-      return [];
-    }
-    return this.signInMethodsForEmail.filter(id => 'password' !== id);
-  }
 
 
   initFg() {
-    this.emailFc = new FormControl( this.queryParams.email || '', {asyncValidators: this.validateEmail.bind(this), updateOn: 'blur'});
-    this.fg = new FormGroup({
-      email: this.emailFc,
-    });
+    this.emailFc = new FormControl(
+      this.queryParams.email || '',
+      {asyncValidators: this.authService.emailHasPasswordValidator, updateOn: 'blur'}
+    );
+    this.fg = new FormGroup({email: this.emailFc});
   }
 
   ngOnInit() {
@@ -87,33 +63,12 @@ export class ResetPasswordComponent implements OnInit {
     this.initFg();
   }
 
-  validateEmail(fc: FormControl):  Promise<ValidationErrors | null> {
-    return new Promise(resolve => {
-      const syncError = Validators.required(fc) || Validators.email(fc);
-      if (syncError) {
-        this.signInMethodsForEmail = [];
-        return resolve(syncError);
-      }
-      const email = fc.value.trim();
-      this.auth.fetchSignInMethodsForEmail(email)
-        .then(results => {
-          this.signInMethodsForEmail = results;
-          if (results.length === 0) {
-            return resolve({'ngx-firebase-auth/user-not-found' : true});
-          }
-          if (results.indexOf('password') === -1) {
-            return resolve({'ngx-firebase-auth/no-password' : true});
-          }
-          resolve(null);
-        })
-        .catch((error) => {
-          const formError = {};
-          formError[error.code] = true;
-          this.signInMethodsForEmail = [];
-          resolve(formError);
-        });
-    });
+  reset() {
+    this.screen = 'form';
+    this.unhandledError = null;
+    this.submitting = false;
   }
+
 
   submit() {
     this.submitting = true;
@@ -127,6 +82,7 @@ export class ResetPasswordComponent implements OnInit {
       .catch((error: auth.Error) => {
         this.submitting = false;
         this.unhandledError = error;
+        this.screen = 'error';
       });
   }
 }

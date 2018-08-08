@@ -46,19 +46,16 @@ describe('OobComponent', () => {
   describe('ngOnInit()', () => {
     let navigateSpy;
     let setRouteSpy;
-    let indexLinkSpy;
     let rpLinkSpy;
     let reLinkSpy;
     let veLinkSpy;
     beforeEach(() => {
-      indexLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth']);
       rpLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth', 'oob', 'reset-password']);
       reLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth', 'oob', 'recover-email']);
       veLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth', 'oob', 'verify-email']);
       setRouteSpy = jasmine.createSpy();
       spyOnProperty(component, 'authService').and.returnValue({
         setRoute: setRouteSpy,
-        getIndexRouterLink: indexLinkSpy,
         getOobResetPasswordRouterLink: rpLinkSpy,
         getOobVerifyEmailRouterLink: veLinkSpy,
         getOobRecoverEmailRouterLink: reLinkSpy
@@ -70,23 +67,23 @@ describe('OobComponent', () => {
       component.ngOnInit();
       expect(setRouteSpy).toHaveBeenCalledWith(NgxFirebaseAuthRoute.oob);
     });
-    it('should navigate to index if oobCode is not present in queryParams', () => {
+    it('should show error oobCode is not present in queryParams', () => {
       spyOnProperty(component, 'queryParams').and.returnValue({mode: 'resetPassword'});
+      expect(component.screen).toBe('wait');
       component.ngOnInit();
-      expect(indexLinkSpy).toHaveBeenCalled();
-      expect(navigateSpy).toHaveBeenCalledWith(indexLinkSpy.calls.mostRecent().returnValue);
+      expect(component.screen).toBe('error');
     });
     it('should navigate to index if mode is not present in queryParams', () => {
       spyOnProperty(component, 'queryParams').and.returnValue({oobCode: 'jshhsk'});
+      expect(component.screen).toBe('wait');
       component.ngOnInit();
-      expect(indexLinkSpy).toHaveBeenCalled();
-      expect(navigateSpy).toHaveBeenCalledWith(indexLinkSpy.calls.mostRecent().returnValue);
+      expect(component.screen).toBe('error');
     });
     it('should navigate to index if mode is not recognized', () => {
       spyOnProperty(component, 'queryParams').and.returnValue({oobCode: 'jshhsk', mode: 'foo'});
+      expect(component.screen).toBe('wait');
       component.ngOnInit();
-      expect(indexLinkSpy).toHaveBeenCalled();
-      expect(navigateSpy).toHaveBeenCalledWith(indexLinkSpy.calls.mostRecent().returnValue);
+      expect(component.screen).toBe('error');
     });
     it('should navigate to reset-password if mode is resetPassword', () => {
       spyOnProperty(component, 'queryParams').and.returnValue({oobCode: 'jshhsk', mode: 'resetPassword'});

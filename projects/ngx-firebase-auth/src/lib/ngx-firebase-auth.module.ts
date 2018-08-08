@@ -7,7 +7,6 @@ import { NgxFormModule } from '@nowzoo/ngx-form';
 
 import { NgxFirebaseAuthService } from './ngx-firebase-auth.service';
 
-import { IndexComponent } from './index/index.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignOutComponent } from './sign-out/sign-out.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
@@ -19,22 +18,12 @@ import { OobRecoverEmailComponent } from './oob-recover-email/oob-recover-email.
 import { AuthComponent } from './auth/auth.component';
 import { OobVerifyEmailComponent } from './oob-verify-email/oob-verify-email.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { OauthSignInComponent } from './oauth-sign-in/oauth-sign-in.component';
 import { AngularFireAuthModule } from 'angularfire2/auth';
-import { NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions } from './shared';
-import { UnifiedSignInComponent } from './unified-sign-in/unified-sign-in.component';
-import { SignInEmailFormComponent } from './sign-in-email-form/sign-in-email-form.component';
-import { SignInMethodsFormComponent } from './unified-sign-in/sign-in-methods-form/sign-in-methods-form.component';
-import { SignInPasswordFormComponent } from './unified-sign-in/sign-in-password-form/sign-in-password-form.component';
-import { SignUpPasswordFormComponent } from './unified-sign-in/sign-up-password-form/sign-up-password-form.component';
 
 const routes: Routes = [
   {path: '', component: AuthComponent, children: [
     {path: 'sign-up', component: SignUpComponent},
-    {path: 'sign-in', children: [
-      {path: 'oauth', component: OauthSignInComponent},
-      {path: '', component: SignInComponent},
-    ]},
+    {path: 'sign-in', component: SignInComponent},
     {path: 'sign-out', component: SignOutComponent},
     {path: 'verify-email', component: VerifyEmailComponent},
     {path: 'reset-password', component: ResetPasswordComponent},
@@ -44,7 +33,7 @@ const routes: Routes = [
       {path: 'recover-email', component: OobRecoverEmailComponent},
       {path: '', component: OobComponent},
     ]},
-    {path: '', component: IndexComponent},
+    {path: '', redirectTo: 'sign-in'},
   ]}
 ];
 
@@ -57,24 +46,17 @@ const routes: Routes = [
     RouterModule.forChild(routes)
   ],
   declarations: [
-    IndexComponent,
+    AlertComponent,
     SignInComponent,
-    OauthSignInComponent,
     SignOutComponent,
     SignUpComponent,
-    VerifyEmailComponent,
     OobComponent,
     OobResetPasswordComponent,
-    AlertComponent,
     OobRecoverEmailComponent,
     AuthComponent,
     OobVerifyEmailComponent,
     ResetPasswordComponent,
-    UnifiedSignInComponent,
-    SignInEmailFormComponent,
-    SignInMethodsFormComponent,
-    SignInPasswordFormComponent,
-    SignUpPasswordFormComponent,
+    VerifyEmailComponent,
   ],
   providers: [
     NgxFirebaseAuthService

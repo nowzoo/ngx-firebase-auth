@@ -5,11 +5,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { auth } from 'firebase/app';
-import {
-  NgxFirebaseAuthOAuthMethod,
-  NgxFirebaseAuthRoute,
-  NGX_FIREBASE_AUTH_OPTIONS
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 import { OobVerifyEmailComponent } from './oob-verify-email.component';
 
@@ -23,11 +19,9 @@ describe('OobVerifyEmailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ OobVerifyEmailComponent ],
       providers: [
-        {provide: NGX_FIREBASE_AUTH_OPTIONS, useValue: {}},
         {provide: AngularFireAuth, useValue: {auth: {}}},
         {provide: NgxFirebaseAuthService, useValue: {}},
         {provide: ActivatedRoute, useValue: {snapshot: {queryParams: {}}} },
-        {provide: Router, useValue: {}},
       ]
     })
     .overrideTemplate(OobVerifyEmailComponent, '')
@@ -52,9 +46,6 @@ describe('OobVerifyEmailComponent', () => {
     expect(component.route).toBeTruthy();
   });
 
-  it('should have router', () => {
-    expect(component.router).toBeTruthy();
-  });
 
   it('should have queryParams', () => {
     expect(component.queryParams).toBeTruthy();
@@ -64,7 +55,6 @@ describe('OobVerifyEmailComponent', () => {
 
   describe('ngOnInit()', () => {
     let oobCode;
-    let navigateSpy;
     let setRouteSpy;
     let actionCodeInfo;
     let checkActionCodeSpy;
@@ -77,8 +67,6 @@ describe('OobVerifyEmailComponent', () => {
       spyOnProperty(component, 'authService').and.returnValue({
         setRoute: setRouteSpy
       });
-      navigateSpy = jasmine.createSpy();
-      spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
       actionCodeInfo = {data: {email: 'foo@bar.com'}};
       checkActionCodeSpy = jasmine.createSpy().and.callFake(() => Promise.resolve(actionCodeInfo));
       spyOnProperty(component, 'auth').and.returnValue({
@@ -99,13 +87,13 @@ describe('OobVerifyEmailComponent', () => {
       expect(component.screen).toBe('wait');
       expect(submitSpy).toHaveBeenCalledWith();
     }));
-    it('should set screen to error if verifyPasswordResetCode fails', fakeAsync(() => {
+    it('should set screen to error if checkActionCodeSpy fails', fakeAsync(() => {
       const error = {code: 'auth/foo'};
       checkActionCodeSpy.and.callFake(() => Promise.reject(error));
       component.ngOnInit();
       tick();
       expect(component.screen).toBe('error');
-      expect(component.error).toBe(error);
+      expect(component.unhandledError).toBe(error);
     }));
   });
 
@@ -114,8 +102,8 @@ describe('OobVerifyEmailComponent', () => {
     let actionCodeInfo;
     let applyActionCodeSpy;
     let pushActionCodeSuccessSpy;
-    let navigateSpy;
-    let getSignInRouterLinkSpy, getIndexRouterLinkSpy;
+
+    let actionCodeSuccess;
 
     beforeEach(() => {
       actionCodeInfo = {data: {email: 'foo@bar.com'}};
@@ -125,91 +113,50 @@ describe('OobVerifyEmailComponent', () => {
       spyOnProperty(component, 'auth').and.returnValue({
         applyActionCode: applyActionCodeSpy,
       });
+      actionCodeSuccess = {user: null, actionCodeInfo: actionCodeInfo};
       pushActionCodeSuccessSpy = jasmine.createSpy().and.callFake(() =>
-        Promise.resolve({user: null, actionCodeInfo: actionCodeInfo})
+        Promise.resolve(actionCodeSuccess)
       );
-      getSignInRouterLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth', 'sign-in']);
-      getIndexRouterLinkSpy = jasmine.createSpy().and.returnValue(['/', 'auth']);
       spyOnProperty(component, 'authService').and.returnValue({
         pushActionCodeSuccess: pushActionCodeSuccessSpy,
-        successMessage: null,
-        redirectCancelled: false,
-        getIndexRouterLink: getIndexRouterLinkSpy,
-        getSignInRouterLink: getSignInRouterLinkSpy
       });
-      navigateSpy = jasmine.createSpy();
-      spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
       component.screen = 'wait';
       component.actionCodeInfo = actionCodeInfo as any;
     });
 
-    it('should set error to null', () => {
-      component.error = {} as any;
-      component.submit();
-      expect(component.error).toBe(null);
-    });
-    it('should call applyActionCode', fakeAsync(() => {
+    it('should handle success', fakeAsync(() => {
+      component.screen = 'wait';
+      component.unhandledError = {} as any;
+      component.actionCodeSuccess = {} as any;
       component.submit();
       expect(applyActionCodeSpy).toHaveBeenCalledWith(oobCode);
-      tick();
-      expect(component.screen).toBe(null);
-    }));
-    it('should handle applyActionCode error', fakeAsync(() => {
-      const error = {code: 'auth/foo'};
-      applyActionCodeSpy.and.callFake(() => Promise.reject(error));
-      component.submit();
-      tick();
-      expect(component.screen).toBe('error');
-    }));
-
-
-    it('should call pushActionCodeSuccess with the info', fakeAsync(() => {
-      component.submit();
+      expect(component.unhandledError).toBe(null);
+      expect(component.actionCodeSuccess).toBe(null);
+      expect(component.screen).toBe('wait');
       tick();
       expect(pushActionCodeSuccessSpy).toHaveBeenCalledWith(component.actionCodeInfo);
-    }));
-    it('should set success message if redirectCancelled is false', fakeAsync(() => {
-      component.authService.redirectCancelled = false;
-      component.authService.successMessage = null;
-      component.submit();
-      tick();
-      expect(component.authService.successMessage).toBeTruthy();
+      expect(component.actionCodeSuccess).toBe(actionCodeSuccess);
+      expect(component.screen).toBe('success');
+      expect(component.unhandledError).toBe(null);
     }));
 
-    it('should redirect to sign in if the user is not signed in', fakeAsync(() => {
-      pushActionCodeSuccessSpy.and.callFake(() =>
-        Promise.resolve({user: null, actionCodeInfo: actionCodeInfo})
-      );
-      component.authService.redirectCancelled = false;
-      component.submit();
-      tick();
-      expect(navigateSpy).toHaveBeenCalledWith(
-        getSignInRouterLinkSpy.calls.mostRecent().returnValue,
-        {queryParams: {email: 'foo@bar.com'}}
-      );
-      expect(getSignInRouterLinkSpy).toHaveBeenCalled();
-
-    }));
-    it('should redirect to index if the user is signed in', fakeAsync(() => {
-      pushActionCodeSuccessSpy.and.callFake(() =>
-        Promise.resolve({user: {}, actionCodeInfo: actionCodeInfo})
-      );
-      component.authService.redirectCancelled = false;
-      component.submit();
-      tick();
-      expect(navigateSpy).toHaveBeenCalledWith(
-        getIndexRouterLinkSpy.calls.mostRecent().returnValue
-      );
-      expect(getIndexRouterLinkSpy).toHaveBeenCalled();
-    }));
-
-    it('should handle auth/foo error', fakeAsync(() => {
+    it('should handle failure', fakeAsync(() => {
       const error = {code: 'auth/foo'};
       applyActionCodeSpy.and.callFake(() => Promise.reject(error));
+      component.screen = 'wait';
+      component.unhandledError = {} as any;
+      component.actionCodeSuccess = {} as any;
       component.submit();
+      expect(applyActionCodeSpy).toHaveBeenCalledWith(oobCode);
+      expect(component.unhandledError).toBe(null);
+      expect(component.actionCodeSuccess).toBe(null);
+      expect(component.screen).toBe('wait');
       tick();
+      expect(pushActionCodeSuccessSpy).not.toHaveBeenCalled();
+      expect(component.actionCodeSuccess).toBe(null);
       expect(component.screen).toBe('error');
-      expect(component.error).toBe(error);
+      expect(component.unhandledError).toBe(error);
+
     }));
   });
 });

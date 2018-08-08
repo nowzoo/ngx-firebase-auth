@@ -1,21 +1,26 @@
-<ngx-firebase-auth-alert context="wait" *ngIf="'wait' === screen">Please wait...</ngx-firebase-auth-alert>
+<div *ngIf="'wait' === screen">
+  <ngx-firebase-auth-alert context="wait">Please wait...</ngx-firebase-auth-alert>
+</div>
+<div *ngIf="'error' === screen">
+  <ngx-firebase-auth-alert context="error">
+    <div [ngSwitch]="error.code">
+      <p *ngSwitchCase="'auth/expired-action-code'" class="mb-0">
+        The recover email link you used has expired.
+      </p>
+      <ng-container *ngSwitchCase="'auth/invalid-action-code'">
+        <p>The recover email link you used is invalid.</p>
+        <p class="mb-0">This could be because you have already used it once.</p>
+      </ng-container>
+      <ng-container *ngSwitchDefault>
+        <p>An unexpected error occurred.</p>
+        <p>Code: {{error.code}}</p>
+        <p class="mb-0">Message: {{error.message}}</p>
+      </ng-container>
+    </div>
+  </ngx-firebase-auth-alert>
 
-<ngx-firebase-auth-alert context="error" *ngIf="'error' === screen">
-  <div [ngSwitch]="error.code">
-    <p *ngSwitchCase="'auth/expired-action-code'" class="mb-0">
-      The recover email link you used has expired.
-    </p>
-    <ng-container *ngSwitchCase="'auth/invalid-action-code'">
-      <p>The recover email link you used is invalid.</p>
-      <p class="mb-0">This could be because you have already used it once.</p>
-    </ng-container>
-    <ng-container *ngSwitchDefault>
-      <p>An unexpected error occurred.</p>
-      <p>Code: {{error.code}}</p>
-      <p class="mb-0">Message: {{error.message}}</p>
-    </ng-container>
-  </div>
-</ngx-firebase-auth-alert>
+</div>
+
 
 <div *ngIf="'form' === screen">
   <div class="form-group">
@@ -30,4 +35,10 @@
       Recover Email
     </button>
   </div>
+</div>
+
+<div *ngIf="'success'===screen">
+  <ngx-firebase-auth-alert context="success">
+    Your email address has been changed back to {{actionCodeInfo.data.email}}.
+  </ngx-firebase-auth-alert>
 </div>

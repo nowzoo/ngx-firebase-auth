@@ -5,9 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { auth } from 'firebase/app';
 import { Subject } from 'rxjs';
 
-import {
-  NgxFirebaseAuthRoute, NGX_FIREBASE_AUTH_OPTIONS
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 import { VerifyEmailComponent } from './verify-email.component';
 
@@ -21,7 +19,6 @@ describe('VerifyEmailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ VerifyEmailComponent ],
       providers: [
-        {provide: NGX_FIREBASE_AUTH_OPTIONS, useValue: {}},
         {provide: AngularFireAuth, useValue: {auth: {}, authState: new Subject()}},
         {provide: NgxFirebaseAuthService, useValue: {}},
         {provide: ActivatedRoute, useValue: {snapshot: {queryParams: {}}} },

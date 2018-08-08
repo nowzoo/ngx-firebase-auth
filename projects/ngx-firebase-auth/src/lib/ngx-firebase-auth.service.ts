@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
+import { FormControl, Validators, ValidationErrors } from '@angular/forms';
 import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth, User } from 'firebase/app';
 import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
 import {
   NgxFirebaseAuthRoute,
-  NgxFirebaseAuthOAuthMethod,
   INgxFirebaseActionCodeSuccess
 } from './shared';
 @Injectable({
@@ -14,15 +14,10 @@ import {
 })
 export class NgxFirebaseAuthService {
 
-  private _oAuthMethod: NgxFirebaseAuthOAuthMethod = NgxFirebaseAuthOAuthMethod.redirect;
-  private _redirectCancelled = false;
-  private _route$: Subject<NgxFirebaseAuthRoute> = new Subject();
   private _cred$: Subject<auth.UserCredential> = new Subject();
+  private _route$: Subject<NgxFirebaseAuthRoute> = new Subject();
+
   private _actionCodeSuccess$: Subject<INgxFirebaseActionCodeSuccess> = new Subject();
-
-
-  private _successMessage: string = null;
-
   private _baseRouteSlugs: string[] = [];
 
   constructor(
@@ -33,42 +28,27 @@ export class NgxFirebaseAuthService {
     return this._afAuth.authState;
   }
 
+  get auth(): auth.Auth {
+    return this._afAuth.auth;
+  }
+
   get route(): Observable<NgxFirebaseAuthRoute> {
     return this._route$.asObservable();
   }
-
-  get redirectCancelled(): boolean {
-    return this._redirectCancelled;
+  setRoute(route: NgxFirebaseAuthRoute) {
+    this._route$.next(route);
   }
 
-  set redirectCancelled(cancelled: boolean) {
-    this._redirectCancelled = cancelled;
-  }
-
-  get oAuthMethod(): NgxFirebaseAuthOAuthMethod {
-    return this._oAuthMethod;
-  }
-
-  set oAuthMethod(method: NgxFirebaseAuthOAuthMethod) {
-    this._oAuthMethod = method;
-  }
-
-  get successMessage(): string {
-    return this._successMessage;
-  }
-  set successMessage(message: string|null) {
-    this._successMessage = message;
-  }
 
   get baseRouteSlugs(): string[] {
     return this._baseRouteSlugs.map(s => s);
   }
 
-  setRoute(route: NgxFirebaseAuthRoute) {
-    this._route$.next(route);
+
+  get signInSuccess(): Observable<auth.UserCredential> {
+    return this._cred$.asObservable();
   }
-  pushCred(cred: auth.UserCredential) {
-    this.redirectCancelled = false;
+  pushSignInSuccess(cred: auth.UserCredential) {
     this._cred$.next(cred);
   }
 
@@ -98,9 +78,7 @@ export class NgxFirebaseAuthService {
     this._baseRouteSlugs = slugs;
   }
 
-  getIndexRouterLink(): string[] {
-    return this.baseRouteSlugs;
-  }
+
   getSignInRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['sign-in']);
   }
@@ -113,9 +91,6 @@ export class NgxFirebaseAuthService {
     return this.baseRouteSlugs.concat(['reset-password']);
   }
 
-  getOAuthSignInRouterLink(): string[] {
-    return this.baseRouteSlugs.concat(['sign-in', 'oauth']);
-  }
   getSignOutRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['sign-out']);
   }
@@ -132,6 +107,59 @@ export class NgxFirebaseAuthService {
   }
   getOobVerifyEmailRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['oob', 'verify-email']);
+  }
+
+  get emailHasNoAccountValidator() {
+    return this.validateEmailHasNoAccount.bind(this);
+  }
+
+  validateEmailHasNoAccount(fc: FormControl): Promise<ValidationErrors | null> {
+    return new Promise(resolve => {
+      const syncError = Validators.required(fc) || Validators.email(fc);
+      if (syncError) {
+        return resolve(syncError);
+      }
+      const email = fc.value.trim();
+      this.auth.fetchSignInMethodsForEmail(email)
+        .then(results => {
+          if (results.length !== 0) {
+            return resolve({'ngx-firebase-auth/email-already-in-use' : results});
+          }
+          resolve(null);
+        })
+        .catch((error) => {
+          const formError = {};
+          formError[error.code] = true;
+          resolve(formError);
+        });
+    });
+  }
+  get emailHasPasswordValidator() {
+    return this.validateEmailHasPassword.bind(this);
+  }
+  validateEmailHasPassword(fc: FormControl): Promise<ValidationErrors | null> {
+    return new Promise(resolve => {
+      const syncError = Validators.required(fc) || Validators.email(fc);
+      if (syncError) {
+        return resolve(syncError);
+      }
+      const email = fc.value.trim();
+      this.auth.fetchSignInMethodsForEmail(email)
+        .then(results => {
+          if (results.length === 0) {
+            return resolve({'ngx-firebase-auth/user-not-found' : true});
+          }
+          if (results.indexOf('password') === -1) {
+            return resolve({'ngx-firebase-auth/no-password' : true});
+          }
+          resolve(null);
+        })
+        .catch((error) => {
+          const formError = {};
+          formError[error.code] = true;
+          resolve(formError);
+        });
+    });
   }
 
 }

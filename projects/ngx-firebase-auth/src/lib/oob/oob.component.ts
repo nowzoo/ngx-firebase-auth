@@ -38,7 +38,7 @@ export class OobComponent implements OnInit {
     const mode = this.queryParams.mode || null;
     const oobCode = this.queryParams.oobCode || null;
     if ((! mode) || (! oobCode)) {
-      this.router.navigate(this.authService.getIndexRouterLink());
+      this.screen = 'error';
       return;
     }
     switch (mode) {
@@ -52,7 +52,7 @@ export class OobComponent implements OnInit {
         this.router.navigate(this.authService.getOobRecoverEmailRouterLink(), {queryParamsHandling: 'merge'});
         return;
       default:
-        this.router.navigate(this.authService.getIndexRouterLink());
+        this.screen = 'error';
         return;
     }
   }

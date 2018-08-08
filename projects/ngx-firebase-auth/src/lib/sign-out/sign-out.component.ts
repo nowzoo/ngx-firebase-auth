@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import {
   NgxFirebaseAuthRoute
@@ -17,7 +17,6 @@ export class SignOutComponent implements OnInit {
   constructor(
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
-    private _route: ActivatedRoute,
     private _router: Router
   ) { }
 
@@ -27,10 +26,6 @@ export class SignOutComponent implements OnInit {
 
   get authService(): NgxFirebaseAuthService {
     return this._authService;
-  }
-
-  get route(): ActivatedRoute {
-    return this._route;
   }
 
   get router(): Router {
