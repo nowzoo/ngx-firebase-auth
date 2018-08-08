@@ -78,20 +78,16 @@ describe('VerifyEmailComponent', () => {
     let user;
     let authState$;
     let navigateSpy;
-    let getIndexRouterLinkSpy;
     let getSignInRouterLinkSpy;
     beforeEach(() => {
       sendEmailVerificationSpy = jasmine.createSpy().and.callFake(() => Promise.resolve());
       user = {sendEmailVerification: sendEmailVerificationSpy};
       authState$ = new Subject();
       navigateSpy = jasmine.createSpy();
-      getIndexRouterLinkSpy =
       spyOnProperty(component, 'authState').and.returnValue(authState$.asObservable());
       spyOnProperty(component, 'router').and.returnValue({navigate: navigateSpy});
-      getIndexRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth']);
       getSignInRouterLinkSpy = jasmine.createSpy().and.callFake(() => ['/', 'auth', 'sign-in']);
       spyOnProperty(component, 'authService').and.returnValue({
-        getIndexRouterLink: getIndexRouterLinkSpy,
         getSignInRouterLink: getSignInRouterLinkSpy
       });
     });
@@ -101,9 +97,9 @@ describe('VerifyEmailComponent', () => {
       expect(component.screen).toBe('wait');
     });
     it('should set error to null', () => {
-      component.error = {} as any;
+      component.unhandledError = {} as any;
       component.submit();
-      expect(component.error).toBe(null);
+      expect(component.unhandledError).toBe(null);
     });
     it('should navigate if the user is not signed in', () => {
       component.submit();
@@ -111,13 +107,7 @@ describe('VerifyEmailComponent', () => {
       expect(navigateSpy).toHaveBeenCalledWith(getSignInRouterLinkSpy.calls.mostRecent().returnValue);
       expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
     });
-    it('should navigate if the user is verified', () => {
-      user.emailVerified = true;
-      component.submit();
-      authState$.next(user);
-      expect(navigateSpy).toHaveBeenCalledWith(getIndexRouterLinkSpy.calls.mostRecent().returnValue);
-      expect(sendEmailVerificationSpy).not.toHaveBeenCalled();
-    });
+
     it('should call user.sendEmailVerification', () => {
       user.emailVerified = false;
       component.submit();
@@ -140,7 +130,7 @@ describe('VerifyEmailComponent', () => {
       authState$.next(user);
       tick();
       expect(component.screen).toBe('error');
-      expect(component.error).toBe(error);
+      expect(component.unhandledError).toBe(error);
     }));
   });
 });

@@ -55,6 +55,7 @@ export class SignInComponent implements OnInit {
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.signUp);
     this.initFg();
+    console.log('SignInComponent on init');
   }
   initFg() {
     this.emailFc = new FormControl(

@@ -18,7 +18,7 @@ export class VerifyEmailComponent implements OnInit {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   user: User = null;
   screen: 'wait' | 'success' | 'error' = 'wait';
-  error: auth.Error = null;
+  unhandledError: auth.Error = null;
 
   constructor(
     private _afAuth: AngularFireAuth,
@@ -60,7 +60,7 @@ export class VerifyEmailComponent implements OnInit {
 
   submit() {
     this.screen = 'wait';
-    this.error = null;
+    this.unhandledError = null;
     this.authState.pipe(take(1))
       .subscribe((user: User) => {
         if (! user) {
@@ -68,16 +68,12 @@ export class VerifyEmailComponent implements OnInit {
           return;
         }
         this.user = user;
-        if (user.emailVerified) {
-          this.router.navigate(this.authService.getIndexRouterLink());
-          return;
-        }
         user.sendEmailVerification()
           .then(() => {
             this.screen = 'success';
           })
           .catch((error: auth.Error) => {
-            this.error = error;
+            this.unhandledError = error;
             this.screen = 'error';
           });
       });
