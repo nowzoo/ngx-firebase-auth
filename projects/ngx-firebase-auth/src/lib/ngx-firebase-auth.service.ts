@@ -83,6 +83,10 @@ export class NgxFirebaseAuthService {
     return this.baseRouteSlugs.concat(['sign-in']);
   }
 
+  getSignInOAuthRouterLink(): string[] {
+    return this.baseRouteSlugs.concat(['sign-in', 'oauth']);
+  }
+
   getSignUpRouterLink(): string[] {
     return this.baseRouteSlugs.concat(['sign-up']);
   }
@@ -160,6 +164,25 @@ export class NgxFirebaseAuthService {
           resolve(formError);
         });
     });
+  }
+
+  getOAuthProviderName(id: string) {
+    switch (id) {
+      case 'twitter.com': return 'Twitter';
+      case 'facebook.com': return 'Facebook';
+      case 'github.com': return 'GitHub';
+      case 'google.com': return 'Google';
+      default: return id;
+    }
+  }
+  getOAuthProviderIconClass(id: string) {
+    switch (id) {
+      case 'twitter.com': return 'fab fa-fw fa-twitter';
+      case 'facebook.com': return 'fab fa-fw fa-facebook';
+      case 'github.com': return 'fab fa-fw fa-github';
+      case 'google.com': return 'fab fa-fw fa-google';
+      default: return 'fas fa-fw fa-sign-in-alt';
+    }
   }
 
 }

@@ -1,0 +1,15 @@
+<ngx-firebase-auth-email-sign-in-methods-form
+  email="chris@nowzoo.com"
+  (result)="onEmailSignInMethodsResult($event)"></ngx-firebase-auth-email-sign-in-methods-form>
+
+<ngx-firebase-auth-remember-form></ngx-firebase-auth-remember-form>
+
+<div *ngIf="emailSignInMethods.fetched">
+  <div *ngIf="emailHasAccount">
+    <h6>Sign In</h6>
+  </div>
+  <div *ngIf="!emailHasAccount">
+    <h6>Create an Account</h6>
+  </div>
+</div>
+<pre>{{emailSignInMethods | json}}</pre>

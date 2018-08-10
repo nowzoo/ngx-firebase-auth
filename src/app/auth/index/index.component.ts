@@ -9,6 +9,7 @@ import { last } from 'rxjs/operators';
 })
 export class IndexComponent implements OnInit {
 
+  methods: any = null;
   constructor(
     private service: NgxFirebaseAuthService,
     private afAuth: AngularFireAuth
@@ -19,6 +20,10 @@ export class IndexComponent implements OnInit {
     this.afAuth.authState.subscribe((user) => {
       console.log('in container', user);
     });
+  }
+
+  onMethodsResult($event) {
+    this.methods = $event;
   }
 
 }

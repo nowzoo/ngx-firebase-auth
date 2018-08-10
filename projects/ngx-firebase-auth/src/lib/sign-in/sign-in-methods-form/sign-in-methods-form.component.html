@@ -1,0 +1,39 @@
+<form [formGroup]="fg" (ngSubmit)="submit()">
+  <div class="form-group">
+    <label [attr.for]="formId + 'email'">Email Address</label>
+    <div class="input-group input-group-lg">
+      <input
+        #emailInput
+        [attr.id]="formId + 'email'"
+        [attr.aria-describedby]="formId + 'email-help'"
+        type="email"
+        formControlName="email"
+        placeholder="Email Address"
+        class="form-control"
+        [class.is-invalid]="showInvalid(emailFc)">
+      <div class="input-group-append">
+        <button
+          class="btn btn-success"
+          type="submit"
+          [disabled]="submitting || fg.invalid">
+          <span class="sr-only">Next</span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+
+    <ngx-form-error [control]="emailFc" key="required">
+      Required.
+    </ngx-form-error>
+    <ngx-form-error [control]="emailFc" key="email">
+      Invalid email.
+    </ngx-form-error>
+    <ngx-form-error [control]="emailFc" key="auth/invalid-email">
+      Invalid email.
+    </ngx-form-error>
+    <small class="form-text text-muted" [attr.id]="formId + 'email-help'">
+      To get started, enter your email address.
+      If you don’t have an account, we’ll create one for you.
+    </small>
+  </div>
+</form>

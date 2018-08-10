@@ -1,0 +1,293 @@
+<ng-container [ngSwitch]="screen">
+
+  <ng-container *ngSwitchCase="screens.wait">
+    <div class="alert alert-secondary">
+      <i class="fas fa-spin fa-spinner" aria-hidden="true"></i>
+      Please wait...
+    </div>
+  </ng-container> <!-- screens.wait -->
+  <ng-container *ngSwitchCase="screens.signInForm">
+    <form (ngSubmit)="signInSubmit()" [formGroup]="fg">
+      <div class="form-group">
+        <label [attr.for]="formId + 'email'">Email Address</label>
+        <input
+          [attr.id]="formId + 'email'"
+          [attr.aria-describedby]="formId + 'email-help'"
+          type="email"
+          [formControl]="emailFc"
+          placeholder="Email Address"
+          (focus)="onEmailFcFocused()"
+          class="form-control form-control-lg"
+          [class.is-invalid]="showInvalid(emailFc)">
+        <ngx-form-error [control]="emailFc" key="required">
+          Required.
+        </ngx-form-error>
+        <ngx-form-error [control]="emailFc" key="email">
+          Invalid email.
+        </ngx-form-error>
+        <ngx-form-error [control]="emailFc" key="auth/invalid-email">
+          Invalid email.
+        </ngx-form-error>
+
+        <small class="form-text text-muted" [attr.id]="formId + 'email-help'">
+          <span *ngIf="!methodsFetched">
+            To get started, enter your email address.
+            If you don’t have an account, we’ll create one for you.
+          </span>
+          <span *ngIf="methodsFetched">
+            <span *ngIf="accountExists">
+              Account found for {{emailFc.value}}.
+            </span>
+            <span *ngIf="!accountExists">
+              We'll create a new account for {{emailFc.value}}.
+            </span>
+          </span>
+        </small>
+      </div> <!-- div class="form-group" (email) -->
+      <div class="form-group">
+        <div class="d-flex justify-content-between">
+          <label [attr.for]="formId + 'password'">
+            <span *ngIf="methodsFetched && (!accountExists)">Choose</span>
+            Password
+          </label>
+          <div>
+            <a
+              href="#" role="button"
+              *ngIf="'password'===password.type"
+              (click)="password.type='text'; $event.preventDefault()">Show Password</a>
+            <a
+              href="#" role="button"
+              *ngIf="'text'===password.type"
+              (click)="password.type='password'; $event.preventDefault()">Hide Password</a>
+          </div>
+        </div>
+        <input
+          #password
+          [attr.id]="formId + 'password'"
+          [attr.aria-describedby]="methodsFetched ? formId + 'password-help' : null"
+          formControlName="password"
+          type="password"
+          [placeholder]="methodsFetched && (!accountExists) ? 'Choos Password' : 'Password'"
+          class="form-control form-control-lg"
+          [class.is-invalid]="showInvalid(passwordFc)">
+        <ngx-form-error [control]="passwordFc" key="required">
+          Required.
+        </ngx-form-error>
+        <ngx-form-error [control]="passwordFc" key="auth/wrong-password">
+          Wrong password.
+        </ngx-form-error>
+        <ngx-form-error [control]="passwordFc" key="auth/weak-password">
+          That password is too weak.
+        </ngx-form-error>
+        <small class="form-text text-muted" [attr.id]="formId + 'password-help'" *ngIf="methodsFetched">
+          <span *ngIf="accountExists">
+            <span *ngIf="accountHasPassword">
+              Enter the password for {{emailFc.value}}.
+              <a href="#" (click)="$event.preventDefault(); showResetPasswordForm()">Forgot?</a>
+            </span>
+            <span *ngIf="!accountHasPassword">
+              The account for {{emailFc.value}} does not have a password.
+              Please sign in with a linked account.
+            </span>
+          </span>
+          <span *ngIf="!accountExists">
+            Choose a strong password.
+          </span>
+        </small>
+      </div>
+      <div class="form-group" *ngIf="methodsFetched && (!accountExists)">
+        <label [attr.for]="formId + 'name'">Your Name</label>
+        <input
+          [attr.id]="formId + 'name'"
+          formControlName="name"
+          type="text"
+          placeholder="Full Name"
+          class="form-control form-control-lg"
+          [class.is-invalid]="showInvalid(nameFc)">
+        <ngx-form-error [control]="nameFc" key="required">
+          Required.
+        </ngx-form-error>
+      </div>
+      <div class="form-group">
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            formControlName="remember"
+            [attr.id]="formId + 'remember'">
+          <label class="form-check-label" [attr.for]="formId + 'remember'">
+            Remember me on this device.
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <button
+          type="submit"
+          [disabled]="submitting || fg.invalid || (! methodsFetched) || (accountExists && (! accountHasPassword))"
+          class="btn btn-lg btn-success btn-block">
+          <i class="fas fa-sign-in-alt fa-fw"></i>
+          <span *ngIf="!methodsFetched">Sign In</span>
+          <span *ngIf="methodsFetched">
+            <span *ngIf="accountExists">Sign In</span>
+            <span *ngIf="!accountExists">Sign Up</span>
+          </span>
+        </button>
+        <div class="text-muted" *ngIf="submitting">
+          <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+          <span *ngIf="accountExists">Signing you in...</span>
+          <span *ngIf="!accountExists">Signing you up...</span>
+        </div>
+      </div>
+
+      <div *ngIf="methodsFetched && accountExists && accountOAuthMethods.length > 0">
+        <h6>
+          <span *ngIf="(accountHasPassword)">Or sign</span>
+          <span *ngIf="(!accountHasPassword)">Sign</span>
+          in with a linked account...
+        </h6>
+        <p *ngFor="let id of accountOAuthMethods">
+          <button type="button" class="btn btn-lg btn-block btn-primary"
+            (click)="oAuthSignIn(id)">
+            <i [ngClass]="getOAuthProviderIconClass(id)" aria-hidden="true"></i>
+            Sign In with {{getOAuthProviderName(id)}}
+          </button>
+        </p>
+      </div>
+      <div *ngIf="methodsFetched && (!accountExists) && oAuthMethods.length > 0">
+        <h6>Or sign in with a linked account...</h6>
+        <p *ngFor="let id of oAuthMethods">
+          <button type="button" class="btn btn-lg btn-block btn-primary"
+            (click)="oAuthSignIn(id)">
+            <i [ngClass]="getOAuthProviderIconClass(id)" aria-hidden="true"></i>
+            Sign Up with {{getOAuthProviderName(id)}}
+          </button>
+        </p>
+      </div>
+    </form>
+  </ng-container> <!-- screens.signInForm -->
+
+  <ng-container *ngSwitchCase="screens.signInError">
+    <div class="alert alert-danger">
+      <p>
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        Woops! An unexpected error occurred.
+      </p>
+      <p>
+        Code: {{unhandledError.code}}
+      </p>
+      <p class="mb-0">
+        Message: {{unhandledError.message}}
+      </p>
+    </div>
+    <p>
+      <button type="button" class="btn btn-light" (click)="showSignInForm()">
+        <i class="fas fa-sync" aria-hidden="true"></i>
+        Try Again
+      </button>
+    </p>
+  </ng-container> <!-- screens.signInError -->
+
+  <ng-container *ngSwitchCase="screens.signInSuccess">
+    <div class="alert alert-secondary">
+      <i class="fas fa-check" aria-hidden="true"></i>
+      Welcome, {{user.displayName}}!
+    </div>
+  </ng-container> <!-- screens.signInSuccess -->
+
+  <ng-container *ngSwitchCase="screens.resetPasswordForm">
+    <form [formGroup]="fg" (ngSubmit)="resetPasswordSubmit">
+      <div class="form-group">
+        <label [attr.for]="formId + 'email'">Email Address</label>
+        <input
+          [attr.id]="formId + 'email'"
+          [attr.aria-describedby]="formId + 'email-help'"
+          type="email"
+          [formControl]="emailFc"
+          placeholder="Email Address"
+          class="form-control form-control-lg"
+          [class.is-invalid]="showInvalid(emailFc)">
+        <ngx-form-error [control]="emailFc" key="required">
+          Required.
+        </ngx-form-error>
+        <ngx-form-error [control]="emailFc" key="email">
+          Invalid email.
+        </ngx-form-error>
+        <ngx-form-error [control]="emailFc" key="auth/invalid-email">
+          Invalid email.
+        </ngx-form-error>
+
+        <ngx-form-error [control]="emailFc" key="auth/user-not-found">
+          We could not find an account associated with {{emailFv.value}}.
+        </ngx-form-error>
+        <ngx-form-error [control]="emailFc" key="auth/no-password">
+          The account associated with {{emailFv.value}} does not have a password.
+        </ngx-form-error>
+        <small class="form-text text-muted" [attr.id]="formId + 'email-help'">
+          To get started, enter your email address.
+          We’ll send a reset password link to that address.
+        </small>
+      </div> <!-- div class="form-group" (email) -->
+      <div class="form-group">
+        <button
+          type="submit"
+          [disabled]="submitting || fg.invalid"
+          class="btn btn-lg btn-success btn-block">
+          <i class="fas fa-envelope fa-fw"></i>
+          Send Reset Password Link
+        </button>
+        <div class="text-muted" *ngIf="submitting">
+          <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+          Sending link...
+        </div>
+      </div>
+    </form>
+  </ng-container> <!-- screens.resetPasswordForm -->
+
+  <ng-container *ngSwitchCase="screens.resetPasswordError">
+    <div class="alert alert-danger">
+      <p>
+        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        Woops! An unexpected error occurred.
+      </p>
+      <p>
+        Code: {{unhandledError.code}}
+      </p>
+      <p class="mb-0">
+        Message: {{unhandledError.message}}
+      </p>
+    </div>
+    <p>
+      <button type="button" class="btn btn-light" (click)="showResetPasswordForm()">
+        <i class="fas fa-sync" aria-hidden="true"></i>
+        Try Again
+      </button>
+    </p>
+  </ng-container> <!-- screens.resetPasswordError -->
+
+  <ng-container *ngSwitchCase="screens.resetPasswordSuccess">
+    <div class="alert alert-success">
+      <p>
+        <i class="fas fa-check" aria-hidden="true"></i>
+        <strong>Check Your Email</strong>
+      </p>
+      <p class="mb-0">
+        We’ve sent a password reset link to {{emailFc.value}}.
+      </p>
+    </div>
+    <p class="text-muted">
+      Allow a few moments for the email to arrive.
+      <button type="button" class="btn btn-light" (click)="showResetPasswordForm()">
+        <i class="fas fa-sync" aria-hidden="true"></i>
+        Resend Link
+      </button>
+    </p>
+  </ng-container> <!-- screens.resetPasswordSuccess -->
+
+  <ng-container *ngSwitchCase="screens.signOut">
+    <div class="alert alert-secondary">
+      <i class="fas fa-spin fa-spinner" aria-hidden="true"></i>
+      Signing you out...
+    </div>
+  </ng-container> <!-- screens.signOut -->
+
+</ng-container>

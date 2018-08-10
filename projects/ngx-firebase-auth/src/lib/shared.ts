@@ -1,3 +1,4 @@
+
 import { auth, User } from 'firebase/app';
 
 export enum NgxFirebaseAuthRoute {
@@ -19,4 +20,9 @@ export enum NgxFirebaseAuthRoute {
 export interface INgxFirebaseActionCodeSuccess {
   actionCodeInfo: auth.ActionCodeInfo;
   user: User;
+}
+
+export interface EmailSignInMethodsResult {
+  email: string;
+  methods: string[];
 }

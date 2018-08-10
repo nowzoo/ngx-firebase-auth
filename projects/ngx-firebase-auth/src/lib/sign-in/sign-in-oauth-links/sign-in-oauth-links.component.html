@@ -1,0 +1,10 @@
+<p *ngFor="let id of oAuthMethods">
+  <a class="btn btn-primary btn-lg btn-block"
+    [routerLink]="authService.getSignInOAuthRouterLink()"
+    [queryParams]="{providerId: id}">
+    <i [attr.class]="authService.getOAuthProviderIconClass(id)" aria-hidden="true"></i>
+    <span *ngIf="'signIn'===context">Sign In</span>
+    <span *ngIf="'signUp'===context">Sign Up</span>
+    with {{authService.getOAuthProviderName(id)}}
+  </a>
+</p>
