@@ -3,6 +3,7 @@
     [email]="email"
     (success)="onSignInMethods($event)"
     (unhandledError)="onUnhandledError($event)"></ngx-firebase-auth-sign-in-methods-form>
+  <ngx-firebase-auth-remember-form></ngx-firebase-auth-remember-form>
 </div>
 
 <div *ngIf="'signIn' === screen">

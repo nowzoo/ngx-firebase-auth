@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, NgZone, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output,
+  EventEmitter, NgZone, ViewChild, ElementRef, Inject } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth } from 'firebase/app';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import { EmailSignInMethodsResult } from '../../shared';
+import { EmailSignInMethodsResult, NGX_FIREBASE_AUTH_OPTIONS, INgxFirebaseAuthOptions } from '../../shared';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
 @Component({
   selector: 'ngx-firebase-auth-sign-up-form',
@@ -29,6 +30,7 @@ export class SignUpFormComponent implements OnInit, AfterViewInit {
   fg: FormGroup;
 
   constructor(
+    @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
     private _authService: NgxFirebaseAuthService,
     private _afAuth: AngularFireAuth
   ) { }
@@ -41,8 +43,13 @@ export class SignUpFormComponent implements OnInit, AfterViewInit {
     return this._authService;
   }
 
+  get options(): INgxFirebaseAuthOptions {
+    return this._options;
+  }
+
   ngOnInit() {
     this.emailFc = new FormControl(this.methodsForEmail.email);
+    this.emailFc.disable();
     this.passwordFc = new FormControl('', {validators: [Validators.required]});
     this.nameFc = new FormControl('', {validators: [Validators.required, NgxFormValidators.requiredString]});
     this.fg = new FormGroup({

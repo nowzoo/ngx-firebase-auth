@@ -1,4 +1,4 @@
-
+import { InjectionToken } from '@angular/core';
 import { auth, User } from 'firebase/app';
 
 export enum NgxFirebaseAuthRoute {
@@ -26,3 +26,23 @@ export interface EmailSignInMethodsResult {
   email: string;
   methods: string[];
 }
+
+
+
+
+
+export enum NgxFirebaseAuthOAuthMethod {
+  redirect,
+  popup
+}
+
+
+export interface INgxFirebaseAuthOptions {
+  signInMethods: string[];
+  authProviderFactory?: (providerId: string) => auth.AuthProvider;
+}
+
+
+export const NGX_FIREBASE_AUTH_OPTIONS = new InjectionToken<INgxFirebaseAuthOptions>(
+  'The options for NgxFirebaseAuthModule. See INgxFirebaseAuthOptions.'
+);

@@ -5,7 +5,13 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import { NgxFirebaseAuthRoute } from '../shared';
+import {
+  NgxFirebaseAuthRoute,
+  EmailSignInMethodsResult,
+  NGX_FIREBASE_AUTH_OPTIONS,
+  INgxFirebaseAuthOptions
+} from '../shared';
+
 @Component({
   selector: 'ngx-firebase-auth-sign-up',
   templateUrl: './sign-up.component.html',
@@ -22,7 +28,6 @@ export class SignUpComponent implements OnInit {
   nameFc: FormControl;
   emailFc: FormControl;
   passwordFc: FormControl;
-  rememberFc: FormControl;
   fg: FormGroup;
 
   constructor(
@@ -49,9 +54,6 @@ export class SignUpComponent implements OnInit {
     return this.route.snapshot.queryParams;
   }
 
-
-
-
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.signUp);
     this.initFg();
@@ -60,12 +62,11 @@ export class SignUpComponent implements OnInit {
     this.nameFc = new FormControl('', {validators: [Validators.required, NgxFormValidators.requiredString]});
     this.emailFc = new FormControl(
       this.queryParams.email || '',
-      {asyncValidators: this.authService.emailHasNoAccountValidator, updateOn: 'blur'}
+      {validators: [Validators.required, Validators.email]}
     );
     this.passwordFc = new FormControl('', {validators: [Validators.required]});
-    this.rememberFc = new FormControl(true);
     this.fg = new FormGroup({
-      name: this.nameFc, email: this.emailFc, password: this.passwordFc, remember: this.rememberFc
+      name: this.nameFc, email: this.emailFc, password: this.passwordFc
     });
   }
 
@@ -83,17 +84,13 @@ export class SignUpComponent implements OnInit {
     const name = this.nameFc.value.trim();
     const email = this.emailFc.value.trim();
     const password = this.passwordFc.value;
-    const persistence = this.rememberFc.value === false ? auth.Auth.Persistence.SESSION : auth.Auth.Persistence.LOCAL;
-    return this.auth.createUserWithEmailAndPassword(email, password)
+    this.auth.createUserWithEmailAndPassword(email, password)
       .then((result: auth.UserCredential) => {
         this.cred = result;
         return this.cred.user.updateProfile({displayName: name, photoURL: null});
       })
       .then(() => {
         return this.cred.user.reload();
-      })
-      .then(() => {
-        return this.auth.setPersistence(persistence);
       })
       .then(() => {
         this.authService.pushSignInSuccess(this.cred);
@@ -103,6 +100,10 @@ export class SignUpComponent implements OnInit {
       .catch((error: auth.Error) => {
         this.submitting = false;
         switch (error.code) {
+          case 'auth/email-already-in-use':
+          case 'auth/invalid-email':
+            NgxFormUtils.setErrorUntilChanged(this.emailFc, error.code);
+            break;
           case 'auth/weak-password':
             NgxFormUtils.setErrorUntilChanged(this.passwordFc, error.code);
             break;

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { FormControl, Validators, ValidationErrors } from '@angular/forms';
 import { take } from 'rxjs/operators';
@@ -7,8 +7,11 @@ import { auth, User } from 'firebase/app';
 import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/router';
 import {
   NgxFirebaseAuthRoute,
+  NGX_FIREBASE_AUTH_OPTIONS,
+  INgxFirebaseAuthOptions,
   INgxFirebaseActionCodeSuccess
 } from './shared';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,8 +24,21 @@ export class NgxFirebaseAuthService {
   private _baseRouteSlugs: string[] = [];
 
   constructor(
+    @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
     private _afAuth: AngularFireAuth
   ) { }
+
+  get options(): INgxFirebaseAuthOptions {
+    return this._options;
+  }
+
+  get passwordMethodEnabled(): boolean {
+    return this.options.signInMethods.indexOf('password') !== -1;
+  }
+
+  get oAuthMethodsEnabled(): string[] {
+    return this.options.signInMethods.filter(id => 'password' !== id);
+  }
 
   get authState(): Observable<User> {
     return this._afAuth.authState;
