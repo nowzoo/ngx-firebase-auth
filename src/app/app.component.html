@@ -4,9 +4,9 @@
   <a [routerLink]="['/', 'auth']">Auth</a>
   |
   <span *ngIf="!user">
-    No User
-    |
     <a [routerLink]="['/', 'auth', 'sign-in']">Sign In</a>
+    |
+    <a [routerLink]="['/', 'auth', 'sign-up']">Sign Up</a>
   </span>
   <span *ngIf="user">
     {{user.displayName}}

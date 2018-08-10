@@ -1,7 +1,0 @@
-<span *ngFor="let id of oAuthMethods; let isLast = last">
-  <a
-    [routerLink]="authService.getSignInOAuthRouterLink()"
-    [queryParams]="{providerId: id}"
-    [attr.title]="'Sign in with ' + id">{{authService.getOAuthProviderName(id)}}</a>
-  <span *ngIf="! isLast"> | </span>
-</span>

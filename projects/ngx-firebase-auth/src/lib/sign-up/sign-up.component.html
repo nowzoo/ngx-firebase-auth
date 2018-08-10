@@ -1,110 +1,95 @@
 <header>
   <h1>Sign Up</h1>
 </header>
+
 <div *ngIf="'form' === screen">
-  <div *ngIf="authService.oAuthMethodsEnabled.length > 0">
-    <p class="text-muted">
-      Create an account with:
-      <ngx-firebase-auth-sign-in-oauth-links
-        [oAuthMethods]="authService.oAuthMethodsEnabled"></ngx-firebase-auth-sign-in-oauth-links>
-    </p>
-  </div>
-  <div *ngIf="authService.passwordMethodEnabled">
-    <p class="text-muted" *ngIf="authService.oAuthMethodsEnabled.length > 0">
-      Or create a separate account with a password:
-    </p>
-    <form [formGroup]="fg" (ngSubmit)="submit()">
-      <div class="form-group">
-        <label [attr.for]="formId + 'name'">Name</label>
-        <input
-          [attr.id]="formId + 'name'"
-          formControlName="name"
-          type="text"
-          placeholder="Full Name"
-          class="form-control form-control-lg"
-          [class.is-invalid]="showInvalid(nameFc)">
-        <ngx-form-error [control]="nameFc" key="required">
-          Required.
-        </ngx-form-error>
-      </div>
-      <div class="form-group">
-        <label [attr.for]="formId + 'email'">Email Address</label>
-        <input
-          [attr.id]="formId + 'email'"
-          [attr.aria-describedby]="formId + 'email-help'"
-          type="email"
-          formControlName="email"
-          placeholder="Email Address"
-          class="form-control form-control-lg"
-          [class.is-invalid]="showInvalid(emailFc)">
-        <ngx-form-error [control]="emailFc" key="required">
-          Required.
-        </ngx-form-error>
-        <ngx-form-error [control]="emailFc" key="email">
-          Invalid email.
-        </ngx-form-error>
-        <ngx-form-error [control]="emailFc" key="auth/invalid-email">
-          Invalid email.
-        </ngx-form-error>
-        <ngx-form-error [control]="emailFc" key="ngx-firebase-auth/email-already-in-use">
-          That email is already associated with an account.
-        </ngx-form-error>
-        <small class="form-text text-muted" [attr.id]="formId + 'email-help'">
-          Already have an account?
-          <a [routerLink]="authService.getSignInRouterLink()" [queryParams]="{email: emailFc.value}">Sign In</a>
+  <form [formGroup]="fg" (ngSubmit)="submit()">
+    <div class="form-group">
+      <label [attr.for]="formId + 'name'">Name</label>
+      <input
+        [attr.id]="formId + 'name'"
+        formControlName="name"
+        type="text"
+        placeholder="Full Name"
+        class="form-control form-control-lg"
+        [class.is-invalid]="showInvalid(nameFc)">
+      <ngx-form-error [control]="nameFc" key="required">
+        Required.
+      </ngx-form-error>
+    </div>
+    <div class="form-group">
+      <label [attr.for]="formId + 'email'">Email Address</label>
+      <input
+        [attr.id]="formId + 'email'"
+        [attr.aria-describedby]="formId + 'email-help'"
+        type="email"
+        formControlName="email"
+        placeholder="Email Address"
+        class="form-control form-control-lg"
+        [class.is-invalid]="showInvalid(emailFc)">
+      <ngx-form-error [control]="emailFc" key="required">
+        Required.
+      </ngx-form-error>
+      <ngx-form-error [control]="emailFc" key="email">
+        Invalid email.
+      </ngx-form-error>
+      <ngx-form-error [control]="emailFc" key="auth/invalid-email">
+        Invalid email.
+      </ngx-form-error>
+      <ngx-form-error [control]="emailFc" key="auth/email-already-in-use">
+        That email is already in use.
+      </ngx-form-error>
+      <small class="form-text text-muted" [attr.id]="formId + 'email-help'">
+        Already have an account?
+        <a [routerLink]="authService.getSignInRouterLink()" [queryParams]="{email: emailFc.value}">Sign In</a>
+      </small>
+    </div> <!-- div class="form-group" (email) -->
+    <div class="form-group">
+      <div class="d-flex justify-content-between">
+        <label [attr.for]="formId + 'password'">Choose Password</label>
+        <small>
+          <a
+            href="#" role="button"
+            *ngIf="'password'===password.type"
+            (click)="password.type='text'; $event.preventDefault()">Show Password</a>
+          <a
+            href="#" role="button"
+            *ngIf="'text'===password.type"
+            (click)="password.type='password'; $event.preventDefault()">Hide Password</a>
         </small>
-      </div> <!-- div class="form-group" (email) -->
-      <div class="form-group">
-        <div class="d-flex justify-content-between">
-          <label [attr.for]="formId + 'password'">Choose Password</label>
-          <small>
-            <a
-              href="#" role="button"
-              *ngIf="'password'===password.type"
-              (click)="password.type='text'; $event.preventDefault()">Show Password</a>
-            <a
-              href="#" role="button"
-              *ngIf="'text'===password.type"
-              (click)="password.type='password'; $event.preventDefault()">Hide Password</a>
-          </small>
-        </div>
-        <input
-          #password
-          [attr.id]="formId + 'password'"
-          formControlName="password"
-          type="password"
-          placeholder="Password"
-          class="form-control form-control-lg"
-          [class.is-invalid]="showInvalid(passwordFc)">
-        <ngx-form-error [control]="passwordFc" key="required">
-          Required.
-        </ngx-form-error>
-        <ngx-form-error [control]="passwordFc" key="auth/weak-password">
-          That password is too weak.
-        </ngx-form-error>
       </div>
+      <input
+        #password
+        [attr.id]="formId + 'password'"
+        formControlName="password"
+        type="password"
+        placeholder="Password"
+        class="form-control form-control-lg"
+        [class.is-invalid]="showInvalid(passwordFc)">
+      <ngx-form-error [control]="passwordFc" key="required">
+        Required.
+      </ngx-form-error>
+      <ngx-form-error [control]="passwordFc" key="auth/weak-password">
+        That password is too weak.
+      </ngx-form-error>
+    </div>
 
+    <ngx-firebase-auth-remember-form></ngx-firebase-auth-remember-form>
 
-      <div class="form-group">
-        <div class="d-flex justify-content-end align-items-center">
-          <div class="mr-2 text-muted" *ngIf="submitting">
-            <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
-            <span>Signing you up...</span>
-          </div>
-          <div>
-            <button
-              type="submit"
-              [disabled]="submitting || fg.invalid"
-              class="btn btn-lg btn-success">
-              <i class="fas fa-sign-in fa-fw"></i>
-              Sign Up
-            </button>
-          </div>
-        </div>
+    <div class="form-group">
+      <button
+        type="submit"
+        [disabled]="submitting || fg.invalid"
+        class="btn btn-lg btn-success btn-block">
+        <i class="fas fa-sign-in-alt fa-fw"></i>
+        Sign Up
+      </button>
+      <div class="mt-2 text-muted" *ngIf="submitting">
+        <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+        <span>Signing you up...</span>
       </div>
-    </form>
-  </div>
-
+    </div>
+  </form>
 </div>
 
 <div *ngIf="'success'===screen">

@@ -1,16 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
-import {
-  NgxFirebaseAuthRoute,
-  EmailSignInMethodsResult,
-  NGX_FIREBASE_AUTH_OPTIONS,
-  INgxFirebaseAuthOptions
-} from '../shared';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-sign-up',
@@ -19,7 +14,7 @@ import {
 })
 export class SignUpComponent implements OnInit {
 
-  screen: 'form' | 'success' | 'error' = 'form';
+  screen:  'form' | 'success' | 'error' = 'form';
   showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-sign-up-';
   submitting = false;
@@ -46,19 +41,12 @@ export class SignUpComponent implements OnInit {
     return this._authService;
   }
 
-  get route(): ActivatedRoute {
-    return this._route;
-  }
-
   get queryParams(): {[key: string]: any} {
-    return this.route.snapshot.queryParams;
+    return this._route.snapshot.queryParams;
   }
 
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.signUp);
-    this.initFg();
-  }
-  initFg() {
     this.nameFc = new FormControl('', {validators: [Validators.required, NgxFormValidators.requiredString]});
     this.emailFc = new FormControl(
       this.queryParams.email || '',
@@ -70,7 +58,9 @@ export class SignUpComponent implements OnInit {
     });
   }
 
-  reset() {
+
+  reset(email?: string) {
+    this.emailFc.setValue(email || '');
     this.cred = null;
     this.unhandledError = null;
     this.submitting = false;
@@ -84,6 +74,8 @@ export class SignUpComponent implements OnInit {
     const name = this.nameFc.value.trim();
     const email = this.emailFc.value.trim();
     const password = this.passwordFc.value;
+
+
     this.auth.createUserWithEmailAndPassword(email, password)
       .then((result: auth.UserCredential) => {
         this.cred = result;
@@ -99,6 +91,8 @@ export class SignUpComponent implements OnInit {
       })
       .catch((error: auth.Error) => {
         this.submitting = false;
+        this.passwordFc.markAsTouched();
+        this.emailFc.markAsTouched();
         switch (error.code) {
           case 'auth/email-already-in-use':
           case 'auth/invalid-email':

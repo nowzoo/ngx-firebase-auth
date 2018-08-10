@@ -39,7 +39,8 @@ export enum NgxFirebaseAuthOAuthMethod {
 
 export interface INgxFirebaseAuthOptions {
   signInMethods: string[];
-  authProviderFactory?: (providerId: string) => auth.AuthProvider;
+  oAuthProviderFactory?: (providerId: string) => auth.AuthProvider;
+  sendEmailVerificationOnSignUp?: boolean;
 }
 
 

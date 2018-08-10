@@ -26,7 +26,9 @@ export class NgxFirebaseAuthService {
   constructor(
     @Inject(NGX_FIREBASE_AUTH_OPTIONS) private _options: INgxFirebaseAuthOptions,
     private _afAuth: AngularFireAuth
-  ) { }
+  ) {
+    console.log('constructed');
+  }
 
   get options(): INgxFirebaseAuthOptions {
     return this._options;
@@ -182,6 +184,23 @@ export class NgxFirebaseAuthService {
     });
   }
 
+  getOAuthProvider(id: string): auth.AuthProvider {
+    let provider;
+    if (this.options.oAuthProviderFactory) {
+      provider = this.options.oAuthProviderFactory(id);
+      if (provider) {
+        return provider;
+      }
+    }
+    switch (id) {
+      case 'twitter.com': return new auth.TwitterAuthProvider();
+      case 'facebook.com': return new auth.FacebookAuthProvider();
+      case 'github.com': return new auth.GithubAuthProvider();
+      case 'google.com': return new auth.GoogleAuthProvider();
+    }
+    throw new Error(`Could not create a provider for "${id}".`);
+  }
+
   getOAuthProviderName(id: string) {
     switch (id) {
       case 'twitter.com': return 'Twitter';
@@ -191,14 +210,6 @@ export class NgxFirebaseAuthService {
       default: return id;
     }
   }
-  getOAuthProviderIconClass(id: string) {
-    switch (id) {
-      case 'twitter.com': return 'fab fa-fw fa-twitter';
-      case 'facebook.com': return 'fab fa-fw fa-facebook';
-      case 'github.com': return 'fab fa-fw fa-github';
-      case 'google.com': return 'fab fa-fw fa-google';
-      default: return 'fas fa-fw fa-sign-in-alt';
-    }
-  }
+
 
 }

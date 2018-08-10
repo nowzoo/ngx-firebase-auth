@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, ValidationErrors } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { auth } from 'firebase/app';
-import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { ActivatedRoute } from '@angular/router';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
-import { NgxFormUtils } from '@nowzoo/ngx-form';
-import { NgxFirebaseAuthRoute, EmailSignInMethodsResult } from '../shared';
+import { NgxFormUtils, NgxFormValidators } from '@nowzoo/ngx-form';
+import { NgxFirebaseAuthRoute } from '../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-sign-in',
@@ -15,21 +14,23 @@ import { NgxFirebaseAuthRoute, EmailSignInMethodsResult } from '../shared';
 })
 export class SignInComponent implements OnInit {
 
-  screen: 'email' | 'signIn' | 'signUp' | 'success' | 'error' = 'email';
-  email: string;
+  screen:  'form' | 'success' | 'error' = 'form';
+  showInvalid = NgxFormUtils.showInvalid;
   formId = 'ngx-firebase-auth-sign-in-';
+  submitting = false;
   unhandledError: auth.Error = null;
   cred: auth.UserCredential = null;
-  showInvalid = NgxFormUtils.showInvalid;
-  methodsForEmail: EmailSignInMethodsResult;
-
-
+  emailFc: FormControl;
+  passwordFc: FormControl;
+  fg: FormGroup;
 
   constructor(
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService,
-    private _route: ActivatedRoute
+    private _route: ActivatedRoute,
   ) { }
+
+
 
   get auth(): auth.Auth {
     return this._afAuth.auth;
@@ -39,54 +40,64 @@ export class SignInComponent implements OnInit {
     return this._authService;
   }
 
-  get route(): ActivatedRoute {
-    return this._route;
-  }
-
   get queryParams(): {[key: string]: any} {
-    return this.route.snapshot.queryParams;
+    return this._route.snapshot.queryParams;
   }
-
-  get emailHasAccount(): boolean {
-    return this.methodsForEmail.methods.length > 0;
-  }
-
-  get emailHasPassword(): boolean {
-    return this.methodsForEmail.methods.indexOf('password') !== -1;
-  }
-
-
 
   ngOnInit() {
     this.authService.setRoute(NgxFirebaseAuthRoute.signUp);
-    this.reset(this.queryParams.email || '');
+    this.emailFc = new FormControl(
+      this.queryParams.email || '',
+      {validators: [Validators.required, Validators.email]}
+    );
+    this.passwordFc = new FormControl('', {validators: [Validators.required]});
+    this.fg = new FormGroup({
+      email: this.emailFc, password: this.passwordFc
+    });
   }
 
-  reset(email) {
-    this.email = email;
-    this.unhandledError = null;
+
+  reset(email?: string) {
+    this.emailFc.setValue(email || '');
     this.cred = null;
-    this.screen = 'email';
+    this.unhandledError = null;
+    this.submitting = false;
+    this.screen = 'form';
   }
 
 
-  onSignInMethods(methods: EmailSignInMethodsResult) {
-    this.methodsForEmail = methods;
-    this.screen = this.emailHasAccount ? 'signIn' : 'signUp';
+  submit() {
+    this.submitting = true;
+    this.unhandledError = null;
+    const email = this.emailFc.value.trim();
+    const password = this.passwordFc.value;
+
+
+    this.auth.signInWithEmailAndPassword(email, password)
+      .then((result: auth.UserCredential) => {
+        this.cred = result;
+        this.authService.pushSignInSuccess(this.cred);
+        this.screen = 'success';
+        this.submitting = false;
+      })
+      .catch((error: auth.Error) => {
+        this.submitting = false;
+        this.passwordFc.markAsTouched();
+        this.emailFc.markAsTouched();
+        switch (error.code) {
+          case 'auth/user-not-found':
+          case 'auth/invalid-email':
+          case 'auth/user-disabled':
+            NgxFormUtils.setErrorUntilChanged(this.emailFc, error.code);
+            break;
+          case 'auth/wrong-password':
+            NgxFormUtils.setErrorUntilChanged(this.passwordFc, error.code);
+            break;
+          default:
+            this.unhandledError = error;
+            this.screen = 'error';
+            break;
+        }
+      });
   }
-
-
-  onAuth(cred: auth.UserCredential) {
-    this.cred = cred;
-    this.screen = 'success';
-    this.authService.pushSignInSuccess(cred);
-  }
-
-  onUnhandledError(error: auth.Error) {
-    this.unhandledError = error;
-    this.screen =  'error';
-  }
-
-
-
 }

@@ -1,29 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgxFirebaseAuthService } from '@nowzoo/ngx-firebase-auth';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { last } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { auth, User } from 'firebase/app';
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
-export class IndexComponent implements OnInit {
-
-  methods: any = null;
+export class IndexComponent implements OnInit, OnDestroy {
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
   constructor(
     private service: NgxFirebaseAuthService,
-    private afAuth: AngularFireAuth
+    private afAuth: AngularFireAuth,
+    private router: Router
   ) { }
 
   ngOnInit() {
-    this.afAuth.authState.pipe(last()).subscribe(console.log );
-    this.afAuth.authState.subscribe((user) => {
-      console.log('in container', user);
-    });
+    this.service.signInSuccess
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((cred: auth.UserCredential) => {
+        console.log(cred);
+        this.router.navigate(['/']);
+      });
   }
 
-  onMethodsResult($event) {
-    this.methods = $event;
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
+
+
 
 }
