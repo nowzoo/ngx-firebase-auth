@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { NgxFirebaseAuthService } from '@nowzoo/ngx-firebase-auth';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { auth, User } from 'firebase/app';
+import * as firebaseui from 'firebaseui';
+
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
@@ -12,19 +13,25 @@ import { auth, User } from 'firebase/app';
 })
 export class IndexComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  screen: 'signIn' | 'signOut';
   constructor(
-    private service: NgxFirebaseAuthService,
     private afAuth: AngularFireAuth,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
-    this.service.signInSuccess
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe((cred: auth.UserCredential) => {
-        console.log(cred);
-        this.router.navigate(['/']);
+    const fragment = this.route.snapshot.fragment;
+    if ('signOut' === fragment) {
+      this.screen = 'signOut';
+      this.afAuth.auth.signOut().then(() => {
+        this.router.navigate(['.'], {relativeTo: this.route, preserveFragment: false});
+        this.screen = 'signIn';
       });
+    } else {
+      this.screen = 'signIn';
+    }
   }
 
   ngOnDestroy() {
@@ -32,6 +39,10 @@ export class IndexComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 
+  onSignedIn(event) {
+    console.log(event);
+    this.router.navigate(['/']);
+  }
 
 
 }

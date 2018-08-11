@@ -1,17 +1,13 @@
 <div class="container">
   <a [routerLink]="['/']">Home</a>
   |
-  <a [routerLink]="['/', 'auth']">Auth</a>
-  |
   <span *ngIf="!user">
-    <a [routerLink]="['/', 'auth', 'sign-in']">Sign In</a>
-    |
-    <a [routerLink]="['/', 'auth', 'sign-up']">Sign Up</a>
+    <a [routerLink]="['/', 'sign-in']">Sign In/Up</a>
   </span>
   <span *ngIf="user">
     {{user.displayName}}
     |
-    <a [routerLink]="['/', 'auth', 'sign-out']">Sign Out</a>
+    <a [routerLink]="['/', 'sign-in']" fragment="signOut">Sign Out</a>
   </span>
 </div>
 <router-outlet></router-outlet>
