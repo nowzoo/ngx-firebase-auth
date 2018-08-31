@@ -1,0 +1,17 @@
+<div *ngIf="'resetPassword' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-oob-reset-password
+    [oobCode]="oobCode"
+    (success)="success.emit($event)"></ngx-firebase-auth-oob-reset-password>
+</div>
+
+<div *ngIf="'verifyEmail' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-oob-verify-email
+    [oobCode]="oobCode"
+    (success)="success.emit($event)"></ngx-firebase-auth-oob-verify-email>
+</div>
+
+<div *ngIf="'recoverEmail' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-oob-recover-email
+    [oobCode]="oobCode"
+    (success)="success.emit($event)"></ngx-firebase-auth-oob-recover-email>
+</div>

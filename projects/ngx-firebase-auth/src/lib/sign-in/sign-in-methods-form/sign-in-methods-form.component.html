@@ -1,0 +1,149 @@
+<form [formGroup]="fg" (ngSubmit)="submit()">
+  <div class="form-group">
+    <label [attr.for]="formId + 'email'">Email Address</label>
+    <input
+      #emailInput
+      [attr.id]="formId + 'email'"
+      [attr.aria-describedby]="formId + 'email'"
+      type="email"
+      autocomplete="email"
+      placeholder="Email Address"
+      formControlName="email"
+      (blur)="fetch()"
+      (keyup.enter)="emailInput.blur()"
+      class="form-control"
+      [class.is-invalid]="emailFc.touched && emailFc.invalid">
+    <div class="invalid-feedback"
+      *ngIf="emailFc.touched && emailFc.hasError('required')">
+      Required.
+    </div>
+    <div class="invalid-feedback"
+      *ngIf="emailFc.touched && emailFc.hasError('email')">
+      Invalid email.
+    </div>
+    <div class="invalid-feedback"
+      *ngIf="emailFc.touched && emailFc.hasError('auth/invalid-email')">
+      Invalid email.
+    </div>
+    <small class="text-muted form-text" [attr.id]="formId + 'email'" [ngSwitch]="fetchStatus">
+      <span *ngSwitchCase="'unfetched'">
+        To get started, enter your email address.
+        If you don’t yet have an account we’ll create one for you.
+      </span>
+      <span *ngSwitchCase="'fetching'">
+        <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
+        Looking up account...
+      </span>
+      <span *ngSwitchCase="'fetched'">
+        <i class="fas fa-check fa-fw text-success" aria-hidden="true"></i>
+        <span *ngIf="accountExists">Account found.</span>
+        <span *ngIf="accountIsNew">We'll create an account.</span>
+      </span>
+    </small>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [value]="true"
+        formControlName="remember"
+        [attr.id]="formId + 'remember'">
+      <label class="form-check-label" [attr.for]="formId + 'remember'">
+        Remember me on this device.
+      </label>
+    </div>
+  </div>
+</form>
+<div *ngIf="methodsFetched && accountExists">
+  <small class="text-muted mb-1 form-text">
+    <span *ngIf="accountHasPassword">
+      <span *ngIf="accountOAuthMethods.length === 0">
+        Please sign in with your password...
+      </span>
+      <span *ngIf="accountOAuthMethods.length === 1">
+        Please sign in with your password or your
+        linked {{getOAuthProviderName(accountOAuthMethods[0])}} account...
+      </span>
+      <span *ngIf="accountOAuthMethods.length > 1">
+        Please sign in with your password or one of your linked accounts...
+      </span>
+    </span>
+    <span *ngIf="!accountHasPassword">
+      <span *ngIf="accountOAuthMethods.length === 1">
+        Please sign in with your
+        linked {{getOAuthProviderName(accountOAuthMethods[0])}} account...
+      </span>
+      <span *ngIf="accountOAuthMethods.length > 1">
+        Please sign in with one of your linked accounts...
+      </span>
+    </span>
+
+  </small>
+
+  <div class="list-group">
+    <a
+      *ngIf="accountHasPassword"
+      routerLink="."
+      [queryParams]="{action: 'signInPassword'}"
+      class="list-group-item list-group-item-action">
+      <i class="fas fa-lock fa-fw" aria-hidden="true"></i>
+      <span class="ml-2">
+        Sign In with Your Password
+      </span>
+    </a>
+    <a
+      *ngFor="let id of accountOAuthMethods"
+      routerLink="."
+      [queryParams]="{action: 'signInOAuth', providerId: id}"
+      class="list-group-item list-group-item-action">
+      <i [attr.class]="getOAuthProviderIcon(id)" aria-hidden="true"></i>
+      <span class="ml-2">
+        Sign In with {{getOAuthProviderName(id)}}
+      </span>
+    </a>
+  </div>
+</div>
+
+<div *ngIf="methodsFetched && accountIsNew">
+  <small class="text-muted mb-1 form-text">
+    <span *ngIf="oAuthProviderIds.length === 0">
+      Please create an account...
+    </span>
+    <span *ngIf="oAuthProviderIds.length === 1">
+      Please sign up with your
+      {{getOAuthProviderName(oAuthProviderIds[0])}} account,
+      or create a separate account with a password....
+    </span>
+    <span *ngIf="oAuthProviderIds.length >1">
+      Please sign up with one of the services listed below,
+      or create a separate account with a password....
+    </span>
+  </small>
+  <div class="list-group">
+
+    <a
+      *ngFor="let id of oAuthProviderIds"
+      routerLink="."
+      [queryParams]="{action: 'signInOAuth', providerId: id}"
+      class="list-group-item list-group-item-action">
+      <i [attr.class]="getOAuthProviderIcon(id)" aria-hidden="true"></i>
+      <span class="ml-2">
+        Sign Up with {{getOAuthProviderName(id)}}
+      </span>
+    </a>
+    <a
+      routerLink="."
+      [queryParams]="{action: 'signUpPassword'}"
+      class="list-group-item list-group-item-action">
+      <i class="fas fa-lock fa-fw" aria-hidden="true"></i>
+      <span class="ml-2">
+        Create
+        <span *ngIf="oAuthProviderIds.length > 0">
+          a Separate
+        </span>
+        Account
+      </span>
+    </a>
+  </div>
+</div>

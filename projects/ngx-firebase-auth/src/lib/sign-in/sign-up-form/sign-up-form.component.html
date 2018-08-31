@@ -1,0 +1,102 @@
+<form [formGroup]="fg" (ngSubmit)="submit()">
+  <div class="form-group">
+    <label [attr.for]="formId + 'email'">Email Address</label>
+    <input
+      readonly
+      #emailInput
+      [attr.id]="formId + 'email'"
+      [attr.aria-describedby]="formId + 'email'"
+      type="email"
+      autocomplete="email"
+      placeholder="Email Address"
+      formControlName="email"
+      class="form-control">
+    <div class="invalid-feedback"
+      *ngIf="emailFc.hasError('required')">
+      Required.
+    </div>
+    <div class="invalid-feedback"
+      *ngIf="emailFc.hasError('email')">
+      Invalid email.
+    </div>
+    <div class="invalid-feedback"
+      *ngIf="emailFc.hasError('auth/invalid-email')">
+      Invalid email.
+    </div>
+    <div class="invalid-feedback"
+      *ngIf="emailFc.hasError('ngx-firebase-auth/account-exists')">
+      We found an account with that email address.
+      <a routerLink="." [queryParams]="{action: 'signIn'}">Sign In</a>
+    </div>
+    <small class="text-muted form-text" [attr.id]="formId + 'email'" >
+      Not your email address?
+      <a routerLink="." [queryParams]="{action: 'signIn'}">Go Back</a>
+    </small>
+  </div>
+
+  <div class="form-group">
+    <div class="d-flex justify-content-between align-items-end">
+      <label [attr.for]="formId + 'password'">Choose Password</label>
+      <small>
+        <a (click)="$event.preventDefault(); passwordInput.type = 'password' === passwordInput.type  ? 'text' : 'password'"
+          href="#" tabindex="-1" class="d-inline-block">
+          <span *ngIf="'password' === passwordInput.type">Show</span>
+          <span *ngIf="'text' === passwordInput.type">Hide</span>
+        </a>
+      </small>
+    </div>
+    <input
+      #passwordInput
+      [attr.id]="formId + 'password'"
+      [attr.aria-describedby]="formId + 'password-help'"
+      type="password"
+      formControlName="password"
+      placeholder="Choose Password"
+      autocomplete="password"
+      class="form-control"
+      [class.is-invalid]="passwordFc.touched && passwordFc.invalid">
+    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('required')">
+      Required.
+    </div>
+    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('auth/wrong-password')">
+      Wrong password.
+    </div>
+    <small [attr.id]="formId + 'password-help'" class="form-text text-muted">
+      Please choose a strong password.
+    </small>
+  </div>
+  <div class="form-group">
+    <label [attr.for]="formId + 'name'">Your Name</label>
+    <input
+      [attr.id]="formId + 'name'"
+      type="text"
+      formControlName="name"
+      placeholder="Your Name"
+      class="form-control"
+      [class.is-invalid]="nameFc.touched && nameFc.invalid">
+    <div class="invalid-feedback" *ngIf="nameFc.touched && nameFc.hasError('required')">
+      Required.
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [value]="true"
+        formControlName="remember"
+        [attr.id]="formId + 'remember'">
+      <label class="form-check-label" [attr.for]="formId + 'remember'">
+        Remember me on this device.
+      </label>
+    </div>
+  </div>
+  <div class="form-group">
+    <button type="submit"
+      class="btn btn-success btn-block"
+      [disabled]="fg.invalid || submitting">
+      <i class="fas fa-lock fa-fw" aria-hidden="true"></i>
+      Create Account
+    </button>
+  </div>
+</form>

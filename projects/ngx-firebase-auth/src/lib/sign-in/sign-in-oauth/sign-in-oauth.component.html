@@ -1,0 +1,97 @@
+<div *ngIf="'wait' === screen">
+  <div class="alert alert-secondary">
+    <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
+    Please wait...
+  </div>
+</div>
+
+<div *ngIf="'methodError' === screen">
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+    We could not sign you in with {{methodError.credential.providerId}}.
+  </div>
+
+  <p class="text-muted">
+    Please sign in with one of the methods associated with
+    {{methodError.email}}:
+  </p>
+
+  <div class="list-group">
+    <a
+      *ngIf="methodError.accountHasPassword"
+      routerLink="."
+      [queryParams]="{action: 'signInPassword'}"
+      class="list-group-item list-group-item-action">
+      <i class="fas fa-unlock" aria-hidden="true"></i>
+      <span class="ml-2">Sign In with Your Password</span>
+    </a>
+    <button
+      *ngFor="let id of methodError.accountOAuthMethods"
+      (click)="oAuthSignIn(id)"
+      class="list-group-item list-group-item-action">
+      <i [attr.class]="getOAuthProviderIcon(id)" aria-hidden="true"></i>
+      <span class="ml-2">Sign In with {{getOAuthProviderName(id)}}</span>
+    </button>
+  </div>
+
+  <form [formGroup]="fg">
+    <div class="form-group">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [value]="true"
+          formControlName="remember"
+          [attr.id]="formId + 'remember'">
+        <label class="form-check-label" [attr.for]="formId + 'remember'">
+          Remember me on this device.
+        </label>
+      </div>
+    </div>
+  </form>
+
+  <p class="text-muted">
+    Is {{methodError.email}} not your email address?
+    <a routerLink="." [queryParams]="{action: 'signIn'}">Start Over</a>
+  </p>
+
+</div>
+
+<div *ngIf="'retry' === screen">
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+    It looks like you cancelled signing in with
+    {{getOAuthProviderName(providerId)}}. Try again:
+  </div>
+
+  <div class="list-group">
+    <button
+      (click)="oAuthSignIn(providerId)"
+      class="list-group-item list-group-item-action">
+      <i [attr.class]="getOAuthProviderIcon(id)" aria-hidden="true"></i>
+      <span class="ml-2">Sign In with {{getOAuthProviderName(id)}}</span>
+    </button>
+  </div>
+
+  <form [formGroup]="fg">
+    <div class="form-group">
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [value]="true"
+          formControlName="remember"
+          [attr.id]="formId + 'remember'">
+        <label class="form-check-label" [attr.for]="formId + 'remember'">
+          Remember me on this device.
+        </label>
+      </div>
+    </div>
+  </form>
+
+
+  <p class="text-muted">
+    <a routerLink="." [queryParams]="{action: 'signIn'}">Start Over</a>
+  </p>
+
+</div>

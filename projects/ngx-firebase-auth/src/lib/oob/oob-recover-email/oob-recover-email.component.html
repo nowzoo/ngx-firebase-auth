@@ -1,0 +1,65 @@
+
+
+<div *ngIf="'wait' === screen">
+  <div class="alert alert-secondary">
+    <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
+    Please wait...
+  </div>
+</div>
+
+
+<div *ngIf="'success' === screen">
+  <div class="alert alert-success">
+    <i class="fas fa-check fa-fw" aria-hidden="true"></i>
+    Your email has been changed back to {{info.data.email}};
+  </div>
+</div>
+
+<div *ngIf="screen === 'form'">
+  <div class="form-group">
+    <p>
+      Are you sure you want to change your email back to
+      {{info.data.email}} from {{info.data.fromEmail}}?
+    </p>
+    <button
+      type="button"
+      [disabled]="submitting"
+      (click)="submit()"
+      class="btn btn-block btn-success">
+      <i class="fas fa-save fa-fw" aria-hidden="true"></i>
+      Yes, Continue
+    </button>
+  </div>
+</div>
+
+
+
+<div *ngIf="screen === 'error'">
+  <div class="alert alert-danger">
+    <p>
+      <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+      Woops! An error occurred.
+    </p>
+    <div [ngSwitch]="unhandledError.code">
+      <p class="mb-0" *ngSwitchCase="'auth/expired-action-code'">
+        The recover email link you used has expired.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/invalid-action-code'">
+        The recover email link you used is not valid. This may be because it
+        has already been used.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/user-disabled'">
+        The account associated with the recover email link you used has been disabled.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/user-not-found'">
+        The account associated with the recover email link you used has been removed.
+      </p>
+      <div *ngSwitchDefault>
+        <p>Code: {{unhandledError.code}}</p>
+        <p class="mb-0">
+          Message: {{unhandledError.message}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

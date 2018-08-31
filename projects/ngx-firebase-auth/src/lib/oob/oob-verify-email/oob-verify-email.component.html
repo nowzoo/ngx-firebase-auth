@@ -1,0 +1,43 @@
+<div *ngIf="'wait' === screen">
+  <div class="alert alert-secondary">
+    <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
+    Please wait...
+  </div>
+</div>
+
+<div *ngIf="'success' === screen">
+  <div class="alert alert-success">
+    <i class="fas fa-check fa-fw" aria-hidden="true"></i>
+    The email {{info.data.email}} has been verified.
+  </div>
+</div>
+
+<div *ngIf="screen === 'error'">
+  <div class="alert alert-danger">
+    <p>
+      <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
+      Woops! An error occurred.
+    </p>
+    <div [ngSwitch]="unhandledError.code">
+      <p class="mb-0" *ngSwitchCase="'auth/expired-action-code'">
+        The verify email link you used has expired.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/invalid-action-code'">
+        The verify email link you used is not valid. This may be because it
+        has already been used.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/user-disabled'">
+        The account associated with the verify email link you used has been disabled.
+      </p>
+      <p class="mb-0" *ngSwitchCase="'auth/user-not-found'">
+        The account associated with the verify email link you used has been removed.
+      </p>
+      <div *ngSwitchDefault>
+        <p>Code: {{unhandledError.code}}</p>
+        <p class="mb-0">
+          Message: {{unhandledError.message}}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

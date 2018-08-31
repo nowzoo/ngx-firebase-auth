@@ -5,6 +5,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
+import { NgxFirebaseAuthUiModule } from '@nowzoo/ngx-firebase-auth';
 
 
 
@@ -22,6 +23,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
+    NgxFirebaseAuthUiModule.forRoot()
   ],
   providers: [
   ],

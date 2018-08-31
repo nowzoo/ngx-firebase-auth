@@ -5,6 +5,8 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { auth, User } from 'firebase/app';
 import * as firebaseui from 'firebaseui';
+import { NgxFirebaseAuthUiService } from '@nowzoo/ngx-firebase-auth';
+
 
 @Component({
   selector: 'app-firebase-ui',
@@ -16,7 +18,8 @@ export class FirebaseUiComponent implements OnInit {
   constructor(
     private _afAuth: AngularFireAuth,
     private _elementRef: ElementRef,
-    private _router: Router
+    private _router: Router,
+    private _service: NgxFirebaseAuthUiService
   ) { }
 
   ngOnInit() {
@@ -35,9 +38,9 @@ export class FirebaseUiComponent implements OnInit {
       // Privacy policy url.
       privacyPolicyUrl: '../privacy'
     };
-    const ui = new firebaseui.auth.AuthUI(this._afAuth.auth);
+
     // The start method will wait until the DOM is loaded.
-    ui.start(this._elementRef.nativeElement, uiConfig);
+    this._service.instance.start(this._elementRef.nativeElement, uiConfig);
   }
 
 

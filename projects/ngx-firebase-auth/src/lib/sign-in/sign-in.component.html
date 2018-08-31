@@ -1,39 +1,88 @@
-<ng-container [ngSwitch]="screen">
-  <ng-container *ngSwitchCase="'signIn'">
-    <ngx-firebase-auth-sign-in-screen
-      [email]="email"
-      (showScreen)="showScreen($event)"
-      (success)="onSuccess($event)"
-      (error)="onError($event)"></ngx-firebase-auth-sign-in-screen>
-  </ng-container>
-  <ng-container *ngSwitchCase="'signUp'">
-    <ngx-firebase-auth-sign-up-screen
-      [email]="email"
-      (showScreen)="showScreen($event)"
-      (success)="onSuccess($event)"
-      (error)="onError($event)"></ngx-firebase-auth-sign-up-screen>
-  </ng-container>
-  <ng-container *ngSwitchCase="'resetPassword'">
-    <ngx-firebase-auth-reset-password-screen
-      [email]="email"
-      (showScreen)="showScreen($event)"
-      (error)="onError($event)"></ngx-firebase-auth-reset-password-screen>
-  </ng-container>
-  <ng-container *ngSwitchCase="'success'">
-    <div class="alert alert-success">
-      <i class="fas fa-check fa-fw" aria-hidden="true"></i>
-      Welcome, {{cred.user.displayName}}!
-    </div>
-  </ng-container>
-  <ng-container *ngSwitchCase="'error'">
-    <div class="alert alert-danger">
-      <p>
-        <i class="fas fa-fw fa-exclamation-triangle" aria-hidden="true"></i> 
-        An unexpected error occurred.
-      </p>
-      <p>Code: {{unhandledError.code}}</p>
-      <p class="mb-0">Message: {{unhandledError.message}}</p>
-    </div>
-  </ng-container>
+<div *ngIf="'wait' === screen" [@screen]="'in'">
+  <div class="alert alert-secondary">
+    <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
+    Please wait...
+  </div>
+</div>
 
-</ng-container>
+<div *ngIf="'unhandledError' === screen" [@screen]="'in'">
+  <div class="alert alert-danger">
+    <i class="fas fa-exclamation-triangle fa-fw text-danger" aria-hidden="true"></i>
+    <strong>Woops!</strong> An unexpected error occurred.
+  </div>
+  <p class="text-muted">
+    Code: {{unhandledError.code}}. Message: {{unhandledError.message}}
+  </p>
+  <p>
+    <a routerLink="." [queryParams]="{action: 'signIn'}">Start Over</a>
+  </p>
+</div>
+
+
+<div *ngIf="'signInSuccess' === screen" [@screen]="'in'">
+  <div class="alert alert-success">
+    <i class="fas fa-check fa-fw" aria-hidden="true"></i>
+    Welcome, {{cred.user.displayName}}!
+  </div>
+</div>
+
+
+
+
+<div *ngIf="'signIn' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-sign-in-methods-form
+    [(email)]="email"
+    [(remember)]="remember"
+    [oAuthProviderIds]="oAuthProviderIds"
+    (error)="showUnhandledError($event)"
+    (success)="showSignInSuccess($event)"></ngx-firebase-auth-sign-in-methods-form>
+  <small class="text-center text-muted my-2 form-text">
+    <ng-container *ngTemplateOutlet="tosTemplate"></ng-container>
+  </small>
+</div>
+
+<div *ngIf="'signInPassword' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-sign-in-form
+    [email]="email"
+    [(remember)]="remember"
+    (error)="showUnhandledError($event)"
+    (success)="showSignInSuccess($event)"></ngx-firebase-auth-sign-in-form>
+  <small class="text-center text-muted my-2 form-text">
+    <ng-container *ngTemplateOutlet="tosTemplate"></ng-container>
+  </small>
+</div>
+
+<div *ngIf="'signUpPassword' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-sign-up-form
+    [email]="email"
+    [(remember)]="remember"
+    (error)="showUnhandledError($event)"
+    (success)="showSignInSuccess($event)"></ngx-firebase-auth-sign-up-form>
+  <small class="text-center text-muted my-2 form-text">
+    <ng-container *ngTemplateOutlet="tosTemplate"></ng-container>
+  </small>
+</div>
+
+<div *ngIf="'signInOAuth' === screen" [@screen]="'in'">
+  <ngx-firebase-auth-sign-in-oauth
+    [providerId]="oAuthProviderId"
+    [initialError]="initialOAuthError"
+    [useOAuthPopup]="useOAuthPopup"
+    [oAuthProviderFactory]="oAuthProviderFactory"
+    [(email)]="email"
+    [(remember)]="remember"
+    (error)="showUnhandledError($event)"
+    (success)="showSignInSuccess($event)"></ngx-firebase-auth-sign-in-oauth>
+  <small class="text-center text-muted my-2 form-text">
+    <ng-container *ngTemplateOutlet="tosTemplate"></ng-container>
+  </small>
+</div>
+
+
+
+<div *ngIf="'resetPassword' === screen" [@screen]="'in'">
+  <h6>Reset Password</h6>
+  <ngx-firebase-auth-reset-password-send-form
+    [(email)]="email"
+    (error)="showUnhandledError($event)"></ngx-firebase-auth-reset-password-send-form>
+</div>
