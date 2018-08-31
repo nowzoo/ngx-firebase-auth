@@ -1,6 +1,19 @@
 {
   "name": "@nowzoo/ngx-firebase-auth",
   "version": "0.2.2",
+  "description": "Angular components for Firebase email-first sign in and out-of-band (oob) actions (reset password, etc).",
+  "keywords": [
+    "firebase", "auth", "angular", "angularfire2", "out of band",
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nowzoo/ngx-firebase-auth.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nowzoo/ngx-firebase-auth/issues"
+  },
+  "homepage": "https://github.com/nowzoo/ngx-firebase-auth#readme",
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
     "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
