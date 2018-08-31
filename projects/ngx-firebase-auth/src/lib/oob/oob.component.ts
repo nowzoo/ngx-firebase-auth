@@ -1,14 +1,14 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
-import { INgxFirebaseAuthOobSuccess, screenAnimation } from '../shared';
+import { screenAnimation } from '../shared';
+import { INgxFirebaseAuthOobSuccess } from '../shared';
 
 
 @Component({
   selector: 'ngx-firebase-auth-oob',
   templateUrl: './oob.component.html',
   styleUrls: ['./oob.component.scss'],
-  animations: [ screenAnimation ]
+  animations: [screenAnimation]
 })
 export class OobComponent implements OnInit {
 

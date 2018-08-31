@@ -1,5 +1,6 @@
-import { trigger, state, style, animate, transition } from '@angular/animations';
+import { AnimationTriggerMetadata, trigger, state, style, animate, transition } from '@angular/animations';
 import { auth, User } from 'firebase/app';
+
 
 export interface ISignInMethodsForEmailResult {
   email: string;
@@ -14,7 +15,7 @@ export interface INgxFirebaseAuthRememberRecord {
 }
 
 
-export const fadeInOutAnimation = trigger('fadeInOut', [
+export const fadeInOutAnimation: AnimationTriggerMetadata = trigger('fadeInOut', [
   state('in', style({opacity: 1, display: 'block'})),
   transition('void => *', [
     style({opacity: 0}),
@@ -25,7 +26,7 @@ export const fadeInOutAnimation = trigger('fadeInOut', [
   ])
 ]);
 
-export const screenAnimation = trigger('screen', [
+export const screenAnimation: AnimationTriggerMetadata = trigger('screen', [
   state('in', style({opacity: 1})),
   transition('void => *', [
     style({opacity: 0}),

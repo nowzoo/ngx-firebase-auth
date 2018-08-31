@@ -68,8 +68,8 @@
     <button
       (click)="oAuthSignIn(providerId)"
       class="list-group-item list-group-item-action">
-      <i [attr.class]="getOAuthProviderIcon(id)" aria-hidden="true"></i>
-      <span class="ml-2">Sign In with {{getOAuthProviderName(id)}}</span>
+      <i [attr.class]="getOAuthProviderIcon(providerId)" aria-hidden="true"></i>
+      <span class="ml-2">Sign In with {{getOAuthProviderName(providerId)}}</span>
     </button>
   </div>
 

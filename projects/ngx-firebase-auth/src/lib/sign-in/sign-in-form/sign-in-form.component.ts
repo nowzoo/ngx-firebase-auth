@@ -5,6 +5,7 @@ import { auth } from 'firebase/app';
 
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
+import { getOAuthProviderIcon, getOAuthProviderName } from '../../shared';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class SignInFormComponent implements OnInit, AfterViewInit {
   passwordFc: FormControl;
   rememberFc: FormControl;
   methodsForEmail: string[] = [];
+  getOAuthProviderIcon = getOAuthProviderIcon;
+  getOAuthProviderName = getOAuthProviderName;
   constructor(
     private _afAuth: AngularFireAuth,
     private _authService: NgxFirebaseAuthService

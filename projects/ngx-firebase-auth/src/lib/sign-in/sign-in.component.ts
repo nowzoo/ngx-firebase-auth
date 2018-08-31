@@ -6,10 +6,7 @@ import { takeUntil, debounceTime } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth, User } from 'firebase/app';
 import {
-  fadeInOutAnimation, screenAnimation,
-  getOAuthProviderIcon, getOAuthProviderName,
-  INgxFirebaseAuthRememberRecord,
-  ISignInMethodsForEmailResult
+  screenAnimation
 } from '../shared';
 import { NgxFirebaseAuthFormHelper } from '../form-helper';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
@@ -20,7 +17,7 @@ import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
   selector: 'ngx-firebase-auth-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss'],
-  animations: [fadeInOutAnimation, screenAnimation]
+  animations: [screenAnimation]
 })
 export class SignInComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<void> = new Subject<void>();

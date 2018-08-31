@@ -28,7 +28,7 @@ export class SignInOauthComponent implements OnInit {
 
 
   screen: 'wait' | 'methodError' | 'retry' = 'wait';
-  methodError: auth.Error = null;
+  methodError: auth.Error|any = null;
   getOAuthProviderIcon = getOAuthProviderIcon;
   getOAuthProviderName = getOAuthProviderName;
   fg: FormGroup;
