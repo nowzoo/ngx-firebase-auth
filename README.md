@@ -4,7 +4,12 @@ Angular components for email-first sign in and out-of-band (oob) actions (reset 
 
 A work in progress.
 
-## Components
+## Install
+```bash
+npm i @nowzoo/ngx-firebase-auth --save
+```
+
+## Component API
 
 ### Sign In Component
 
@@ -17,6 +22,12 @@ A work in progress.
 - Outputs
    - `success: EventEmitter<auth.UserCredential>`
    - `mode: EventEmitter<'signIn' | 'resetPassword'>` Use this to set the route title.
+
+#### Sign In Component Notes
+
+- Only the OAuth providers you pass in `oAuthProviderIds` will be shown as sign up options for new users.
+- For existing users, all oAuth providers for that user will be displayed as sign in options.
+- Only the `password` and  the Twitter, Google, GitHub and Facebook providers are currently supported.
 
 #### Sign In Component Usage
 Import `NgxFirebaseAuthSignInModule` into the module which contains your sign in route...
@@ -121,6 +132,8 @@ export class RouteComponent {
    - `success:  EventEmitter<INgxFirebaseAuthOobSuccess>` See below.
    - `navigationError: EventEmitter<void>` Emitted when one or more of the oob parameters (`oobCode` and `mode`) is messing from the querystring. You should handle this by redirecting the user in some way.
    - `mode: EventEmitter<'resetPassword' | 'verifyEmail' | 'recoverEmail'>` Use this to set the window or route title.
+
+### Oob Component Notes
 
 #### Interface `INgxFirebaseAuthOobSuccess`
 - `mode: 'resetPassword' | 'verifyEmail' | 'recoverEmail'`;
