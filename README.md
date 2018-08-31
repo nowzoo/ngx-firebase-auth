@@ -181,7 +181,7 @@ export class RouteComponent {
       (mode)="onMode($event)"
       (navigationError)="onNavigationError()"
       (success)="onSuccess($event)">
-    </ngx-firebase-auth-sign-in>
+    </ngx-firebase-auth-oob>
   </div>
 </div>
 ```
