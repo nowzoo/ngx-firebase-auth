@@ -3,11 +3,13 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth, User } from 'firebase/app';
 import { INgxFirebaseAuthOobSuccess } from '../../shared';
+import { screenAnimation } from '../../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-oob-verify-email',
   templateUrl: './oob-verify-email.component.html',
-  styleUrls: ['./oob-verify-email.component.scss']
+  styleUrls: ['./oob-verify-email.component.scss'],
+  animations: [screenAnimation]
 })
 export class OobVerifyEmailComponent implements OnInit {
 

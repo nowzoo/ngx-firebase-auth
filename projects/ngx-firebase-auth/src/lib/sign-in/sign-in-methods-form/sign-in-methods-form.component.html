@@ -13,28 +13,28 @@
       (keyup.enter)="emailInput.blur()"
       class="form-control"
       [class.is-invalid]="emailFc.touched && emailFc.invalid">
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.touched && emailFc.hasError('required')">
       Required.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.touched && emailFc.hasError('email')">
       Invalid email.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.touched && emailFc.hasError('auth/invalid-email')">
       Invalid email.
     </div>
     <small class="text-muted form-text" [attr.id]="formId + 'email'" [ngSwitch]="fetchStatus">
-      <span *ngSwitchCase="'unfetched'">
+      <span *ngSwitchCase="'unfetched'" [@fadeInOut]="'in'">
         To get started, enter your email address.
         If you don’t yet have an account we’ll create one for you.
       </span>
-      <span *ngSwitchCase="'fetching'">
+      <span *ngSwitchCase="'fetching'" [@fadeInOut]="'in'">
         <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
         Looking up account...
       </span>
-      <span *ngSwitchCase="'fetched'">
+      <span *ngSwitchCase="'fetched'" [@fadeInOut]="'in'">
         <i class="fas fa-check fa-fw text-success" aria-hidden="true"></i>
         <span *ngIf="accountExists">Account found.</span>
         <span *ngIf="accountIsNew">We'll create an account.</span>
@@ -55,7 +55,7 @@
     </div>
   </div>
 </form>
-<div *ngIf="methodsFetched && accountExists">
+<div *ngIf="methodsFetched && accountExists" [@screen]="'in'">
   <small class="text-muted mb-1 form-text">
     <span *ngIf="accountHasPassword">
       <span *ngIf="accountOAuthMethods.length === 0">
@@ -105,7 +105,7 @@
   </div>
 </div>
 
-<div *ngIf="methodsFetched && accountIsNew">
+<div *ngIf="methodsFetched && accountIsNew" [@screen]="'in'">
   <small class="text-muted mb-1 form-text">
     <span *ngIf="oAuthProviderIds.length === 0">
       Please create an account...

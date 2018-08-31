@@ -24,6 +24,7 @@ export class SignInComponent implements OnInit, OnDestroy {
   @Input() oAuthProviderFactory: (providerId: string) => auth.AuthProvider;
   @Input() tosTemplate: TemplateRef<any> = null;
   @Output() success: EventEmitter<auth.UserCredential> = new EventEmitter();
+  @Output() mode: EventEmitter<'signIn' | 'resetPassword'> = new EventEmitter();
 
   remember: boolean;
   email: string;
@@ -150,6 +151,7 @@ export class SignInComponent implements OnInit, OnDestroy {
 
 
   showSignOut(): Promise<any> {
+    this.signedOut = false;
     this.screen = 'wait';
     return this.auth.signOut()
       .then(() => {
@@ -158,36 +160,48 @@ export class SignInComponent implements OnInit, OnDestroy {
   }
 
   showSignIn(signedOut?: boolean) {
+    this.mode.emit('signIn');
     this.signedOut = signedOut === true;
     this.screen = 'signIn';
   }
 
   showSignInPassword() {
+    this.mode.emit('signIn');
+    this.signedOut = false;
     this.screen = 'signInPassword';
   }
 
   showSignUpPassword() {
+    this.mode.emit('signIn');
+    this.signedOut = false;
     this.screen = 'signUpPassword';
 
   }
 
   showSignInOAuth(oAuthProviderId: string, error: auth.Error) {
+    this.mode.emit('signIn');
+    this.signedOut = false;
     this.oAuthProviderId = oAuthProviderId;
     this.initialOAuthError = error;
     this.screen = 'signInOAuth';
   }
 
   showSignInSuccess(cred: auth.UserCredential) {
+    this.mode.emit('signIn');
+    this.signedOut = false;
     this.cred = cred;
     this.screen = 'signInSuccess';
     this.success.emit(cred);
   }
 
   showResetPassword() {
+    this.mode.emit('resetPassword');
+    this.signedOut = false;
     this.screen = 'resetPassword';
   }
 
   showUnhandledError(error: auth.Error) {
+    this.signedOut = false;
     this.unhandledError = error;
     this.screen = 'unhandledError';
   }

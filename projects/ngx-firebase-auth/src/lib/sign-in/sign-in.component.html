@@ -30,6 +30,10 @@
 
 
 <div *ngIf="'signIn' === screen" [@screen]="'in'">
+  <div class="alert alert-success" *ngIf="signedOut">
+    <i class="fas fa-check fa-fw" aria-hidden="true"></i>
+    You’re signed out.
+  </div>
   <ngx-firebase-auth-sign-in-methods-form
     [(email)]="email"
     [(remember)]="remember"

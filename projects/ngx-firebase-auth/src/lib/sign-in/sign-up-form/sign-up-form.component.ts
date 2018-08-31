@@ -3,12 +3,14 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth } from 'firebase/app';
 
+import { fadeInOutAnimation } from '../../shared';
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
 @Component({
   selector: 'ngx-firebase-auth-sign-up-form',
   templateUrl: './sign-up-form.component.html',
-  styleUrls: ['./sign-up-form.component.scss']
+  styleUrls: ['./sign-up-form.component.scss'],
+  animations: [ fadeInOutAnimation ]
 })
 export class SignUpFormComponent implements OnInit, AfterViewInit {
 

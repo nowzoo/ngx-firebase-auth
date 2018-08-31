@@ -7,7 +7,6 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
-import { NgxFirebaseAuthModule } from '@nowzoo/ngx-firebase-auth';
 import { DeviceDetectorModule } from 'ngx-device-detector';
 
 
@@ -28,7 +27,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
-    NgxFirebaseAuthModule,
     DeviceDetectorModule.forRoot()
   ],
   providers: [

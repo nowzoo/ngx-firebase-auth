@@ -1,3 +1,13 @@
-<p>
-  route works!
-</p>
+<div class="row">
+  <div class="col-sm-8 offset-md-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+    <h1>
+      {{routeTitle}}
+    </h1>
+    <hr>
+    <ngx-firebase-auth-oob
+      (mode)="onMode($event)"
+      (navigationError)="onNavigationError()"
+      (success)="onSuccess($event)">
+    </ngx-firebase-auth-sign-in>
+  </div>
+</div>

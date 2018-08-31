@@ -5,13 +5,14 @@ import { auth } from 'firebase/app';
 
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
-import { getOAuthProviderIcon, getOAuthProviderName } from '../../shared';
+import { getOAuthProviderIcon, getOAuthProviderName, fadeInOutAnimation } from '../../shared';
 
 
 @Component({
   selector: 'ngx-firebase-auth-sign-in-form',
   templateUrl: './sign-in-form.component.html',
-  styleUrls: ['./sign-in-form.component.scss']
+  styleUrls: ['./sign-in-form.component.scss'],
+  animations: [fadeInOutAnimation]
 })
 export class SignInFormComponent implements OnInit, AfterViewInit {
 

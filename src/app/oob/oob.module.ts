@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { NgxFirebaseAuthOobModule } from '@nowzoo/ngx-firebase-auth';
-
-
 import { RouteComponent } from './route/route.component';
 
 const routes: Routes = [

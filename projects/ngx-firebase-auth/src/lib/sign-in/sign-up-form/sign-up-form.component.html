@@ -11,19 +11,19 @@
       placeholder="Email Address"
       formControlName="email"
       class="form-control">
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('required')">
       Required.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('email')">
       Invalid email.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('auth/invalid-email')">
       Invalid email.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('ngx-firebase-auth/account-exists')">
       We found an account with that email address.
       <a routerLink="." [queryParams]="{action: 'signIn'}">Sign In</a>
@@ -55,10 +55,12 @@
       autocomplete="password"
       class="form-control"
       [class.is-invalid]="passwordFc.touched && passwordFc.invalid">
-    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('required')">
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
+      *ngIf="passwordFc.touched && passwordFc.hasError('required')">
       Required.
     </div>
-    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('auth/wrong-password')">
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
+      *ngIf="passwordFc.touched && passwordFc.hasError('auth/wrong-password')">
       Wrong password.
     </div>
     <small [attr.id]="formId + 'password-help'" class="form-text text-muted">
@@ -74,7 +76,8 @@
       placeholder="Your Name"
       class="form-control"
       [class.is-invalid]="nameFc.touched && nameFc.invalid">
-    <div class="invalid-feedback" *ngIf="nameFc.touched && nameFc.hasError('required')">
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
+      *ngIf="nameFc.touched && nameFc.hasError('required')">
       Required.
     </div>
   </div>

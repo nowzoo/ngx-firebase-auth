@@ -1,18 +1,18 @@
-<div *ngIf="'wait' === screen">
+<div *ngIf="'wait' === screen" [@screen]="'in'">
   <div class="alert alert-secondary">
     <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
     Please wait...
   </div>
 </div>
 
-<div *ngIf="'success' === screen">
+<div *ngIf="'success' === screen" [@screen]="'in'">
   <div class="alert alert-success">
     <i class="fas fa-check fa-fw" aria-hidden="true"></i>
     The email {{info.data.email}} has been verified.
   </div>
 </div>
 
-<div *ngIf="screen === 'error'">
+<div *ngIf="screen === 'error'" [@screen]="'in'">
   <div class="alert alert-danger">
     <p>
       <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>

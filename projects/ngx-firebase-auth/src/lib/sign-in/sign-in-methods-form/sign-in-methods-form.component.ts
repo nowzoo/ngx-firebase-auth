@@ -6,11 +6,13 @@ import { debounceTime } from 'rxjs/operators';
 import { ISignInMethodsForEmailResult, getOAuthProviderIcon, getOAuthProviderName } from '../../shared';
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
+import { fadeInOutAnimation, screenAnimation } from '../../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-sign-in-methods-form',
   templateUrl: './sign-in-methods-form.component.html',
-  styleUrls: ['./sign-in-methods-form.component.scss']
+  styleUrls: ['./sign-in-methods-form.component.scss'],
+  animations: [fadeInOutAnimation, screenAnimation]
 })
 export class SignInMethodsFormComponent implements OnInit, AfterViewInit {
 

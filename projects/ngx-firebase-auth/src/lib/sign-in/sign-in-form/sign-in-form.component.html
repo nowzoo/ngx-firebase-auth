@@ -13,28 +13,28 @@
       placeholder="Email Address"
       formControlName="email"
       class="form-control">
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('required')">
       Required.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('email')">
       Invalid email.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('auth/invalid-email')">
       Invalid email.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('auth/user-not-found')">
       We could not find an account with that email address.
       <a routerLink="." [queryParams]="{action: 'signIn'}">Create Account</a>
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('auth/user-disabled')">
       The account with that email address has been disabled.
     </div>
-    <div class="invalid-feedback"
+    <div class="invalid-feedback" [@fadeInOut]="'in'"
       *ngIf="emailFc.hasError('ngx-firebase-auth/no-password')">
       The account with that email address does not have a password.
       Please sign in using:
@@ -74,10 +74,14 @@
       autocomplete="password"
       class="form-control"
       [class.is-invalid]="passwordFc.touched && passwordFc.invalid">
-    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('required')">
+    <div class="invalid-feedback"
+      *ngIf="passwordFc.touched && passwordFc.hasError('required')"
+      [@fadeInOut]="'in'">
       Required.
     </div>
-    <div class="invalid-feedback" *ngIf="passwordFc.touched && passwordFc.hasError('auth/wrong-password')">
+    <div class="invalid-feedback"
+      *ngIf="passwordFc.touched && passwordFc.hasError('auth/wrong-password')"
+      [@fadeInOut]="'in'">
       Wrong password.
     </div>
     <small [attr.id]="formId + 'password-help'" class="form-text text-muted">

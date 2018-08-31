@@ -1,6 +1,6 @@
 
 
-<div *ngIf="'wait' === screen">
+<div *ngIf="'wait' === screen" [@screen]="'in'">
   <div class="alert alert-secondary">
     <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
     Please wait...
@@ -8,14 +8,14 @@
 </div>
 
 
-<div *ngIf="'success' === screen">
+<div *ngIf="'success' === screen" [@screen]="'in'">
   <div class="alert alert-success">
     <i class="fas fa-check fa-fw" aria-hidden="true"></i>
     Your email has been changed back to {{info.data.email}};
   </div>
 </div>
 
-<div *ngIf="screen === 'form'">
+<div *ngIf="screen === 'form'" [@screen]="'in'">
   <div class="form-group">
     <p>
       Are you sure you want to change your email back to
@@ -34,7 +34,7 @@
 
 
 
-<div *ngIf="screen === 'error'">
+<div *ngIf="screen === 'error'" [@screen]="'in'">
   <div class="alert alert-danger">
     <p>
       <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>

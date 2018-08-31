@@ -1,11 +1,11 @@
-<div *ngIf="'wait' === screen">
+<div *ngIf="'wait' === screen" [@screen]="'in'">
   <div class="alert alert-secondary">
     <i class="fas fa-spin fa-spinner fa-fw" aria-hidden="true"></i>
     Please wait...
   </div>
 </div>
 
-<div *ngIf="'methodError' === screen">
+<div *ngIf="'methodError' === screen" [@screen]="'in'">
   <div class="alert alert-danger">
     <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
     We could not sign you in with {{methodError.credential.providerId}}.
@@ -57,7 +57,7 @@
 
 </div>
 
-<div *ngIf="'retry' === screen">
+<div *ngIf="'retry' === screen" [@screen]="'in'">
   <div class="alert alert-danger">
     <i class="fas fa-exclamation-triangle fa-fw" aria-hidden="true"></i>
     It looks like you cancelled signing in with

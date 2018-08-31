@@ -5,11 +5,13 @@ import { auth, User } from 'firebase/app';
 import { INgxFirebaseAuthOobSuccess } from '../../shared';
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
+import { screenAnimation } from '../../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-oob-reset-password',
   templateUrl: './oob-reset-password.component.html',
-  styleUrls: ['./oob-reset-password.component.scss']
+  styleUrls: ['./oob-reset-password.component.scss'],
+  animations: [screenAnimation]
 })
 export class OobResetPasswordComponent implements OnInit {
 

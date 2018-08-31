@@ -3,11 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth } from 'firebase/app';
 import { NgxFirebaseAuthFormHelper } from '../../form-helper';
+import { fadeInOutAnimation } from '../../shared';
 
 @Component({
   selector: 'ngx-firebase-auth-reset-password-send-form',
   templateUrl: './reset-password-send-form.component.html',
-  styleUrls: ['./reset-password-send-form.component.scss']
+  styleUrls: ['./reset-password-send-form.component.scss'],
+  animations: [fadeInOutAnimation]
 })
 export class ResetPasswordSendFormComponent implements OnInit, AfterViewInit {
 

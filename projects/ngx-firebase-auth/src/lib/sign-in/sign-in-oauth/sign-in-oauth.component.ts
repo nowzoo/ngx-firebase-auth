@@ -6,12 +6,14 @@ import { FormGroup, FormControl } from '@angular/forms';
 
 import { getOAuthProviderIcon, getOAuthProviderName } from '../../shared';
 import { NgxFirebaseAuthService } from '../../ngx-firebase-auth.service';
+import { screenAnimation } from '../../shared';
 
 
 @Component({
   selector: 'ngx-firebase-auth-sign-in-oauth',
   templateUrl: './sign-in-oauth.component.html',
-  styleUrls: ['./sign-in-oauth.component.scss']
+  styleUrls: ['./sign-in-oauth.component.scss'],
+  animations: [ screenAnimation ]
 })
 export class SignInOauthComponent implements OnInit {
 
