@@ -1,13 +1,11 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, TemplateRef, NgZone} from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil, debounceTime } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { auth, User } from 'firebase/app';
-import {
-  screenAnimation
-} from '../shared';
+import { screenAnimation } from '../shared';
 import { NgxFirebaseAuthFormHelper } from '../form-helper';
 import { NgxFirebaseAuthService } from '../ngx-firebase-auth.service';
 
@@ -44,9 +42,7 @@ export class SignInComponent implements OnInit, OnDestroy {
     private _svc: NgxFirebaseAuthService,
     private _route: ActivatedRoute,
     private _router: Router,
-    private _ngZone: NgZone
-  ) {
-  }
+  ) {}
 
   get auth(): auth.Auth {
     return this._afAuth.auth;
