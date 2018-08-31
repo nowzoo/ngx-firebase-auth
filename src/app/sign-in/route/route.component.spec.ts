@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RememberFormComponent } from './remember-form.component';
+import { RouteComponent } from './route.component';
 
-describe('RememberFormComponent', () => {
-  let component: RememberFormComponent;
-  let fixture: ComponentFixture<RememberFormComponent>;
+describe('RouteComponent', () => {
+  let component: RouteComponent;
+  let fixture: ComponentFixture<RouteComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RememberFormComponent ]
+      declarations: [ RouteComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RememberFormComponent);
+    fixture = TestBed.createComponent(RouteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
