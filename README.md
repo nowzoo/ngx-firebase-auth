@@ -9,7 +9,6 @@ A work in progress.
 ### Sign In Component
 
 - selector: `ngx-firebase-auth-sign-in`
-- exportAs: `ngxFirebaseAuthSignIn`
 - Inputs
    - `oAuthProviderIds: string[]` Optional. The ids of OAuth providers you want to enable.
    - `oAuthProviderFactory: (providerId: string) => auth.AuthProvider` Optional. Pass your function for creating providers. If no function is provided here, or the function does not return a provider for a particular provider id, the component will create a default provider.
@@ -58,7 +57,6 @@ Stick an instance of the sign in component into the HTML of your component...
     <h1>{{routeTitle}}</h1>
     <hr>
     <ngx-firebase-auth-sign-in
-      #signIn="ngxFirebaseAuthSignIn"
       [oAuthProviderIds]="['google.com']"
       [tosTemplate]="tos"
       [useOAuthPopup]="deviceDetector.isDesktop()"
@@ -120,7 +118,7 @@ export class RouteComponent {
 - selector: `ngx-firebase-auth-oob`
 - Inputs (none)
 - Outputs
-   - `success:  EventEmitter<INgxFirebaseAuthOobSuccess>` Se below.
+   - `success:  EventEmitter<INgxFirebaseAuthOobSuccess>` See below.
    - `navigationError: EventEmitter<void>` Emitted when one or more of the oob parameters (`oobCode` and `mode`) is messing from the querystring. You should handle this by redirecting the user in some way.
    - `mode: EventEmitter<'resetPassword' | 'verifyEmail' | 'recoverEmail'>` Use this to set the window or route title.
 

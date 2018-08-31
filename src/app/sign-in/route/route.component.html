@@ -9,7 +9,6 @@
     <h1>{{routeTitle}}</h1>
     <hr>
     <ngx-firebase-auth-sign-in
-      #signIn="ngxFirebaseAuthSignIn"
       [oAuthProviderIds]="['google.com']"
       [tosTemplate]="tos"
       [useOAuthPopup]="deviceDetector.isDesktop()"
