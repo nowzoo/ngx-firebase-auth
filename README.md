@@ -2,7 +2,12 @@
 
 Angular components for email-first sign in and out-of-band (oob) actions (reset password, etc).
 
-A work in progress.
+## Notes
+- This is a work in progress.
+- The component styling is based on Bootstrap.
+-  Supports sign in by password, Google, Facebook, Twitter and GitHub. Does not currently support sign in via email link or phone.
+- Depends upon [angularfire2](https://github.com/angular/angularfire2)
+
 
 ## Install
 ```bash
@@ -133,13 +138,17 @@ export class RouteComponent {
    - `navigationError: EventEmitter<void>` Emitted when one or more of the oob parameters (`oobCode` and `mode`) is messing from the querystring. You should handle this by redirecting the user in some way.
    - `mode: EventEmitter<'resetPassword' | 'verifyEmail' | 'recoverEmail'>` Use this to set the window or route title.
 
-### Oob Component Notes
+
 
 #### Interface `INgxFirebaseAuthOobSuccess`
 - `mode: 'resetPassword' | 'verifyEmail' | 'recoverEmail'`;
 - `info: auth.ActionCodeInfo`
 - `cred?: auth.UserCredential` Only populated on reset password, when we sign the user in after saving the password.
 - `user?: User` Populated if the user is signed in.
+
+#### Oob Component Notes
+
+- Only the `resetPassword`, `verifyEmail` and `recoverEmail` oob modes are supported.
 
 #### Oob Component Usage
  Import `NgxFirebaseAuthOobModule` into the module which contains your sign in route...

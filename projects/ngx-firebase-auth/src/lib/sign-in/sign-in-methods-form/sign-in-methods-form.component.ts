@@ -121,6 +121,8 @@ export class SignInMethodsFormComponent implements OnInit, AfterViewInit {
         this.methodsForEmail = {status: 'fetched', methods: results, email: email};
       })
       .catch((error: auth.Error) => {
+        this.emailFc.markAsDirty();
+        this.emailFc.markAsTouched();
         switch (error.code) {
           case 'auth/invalid-email':
             NgxFirebaseAuthFormHelper.setErrorUntilChanged(this.emailFc, error.code);

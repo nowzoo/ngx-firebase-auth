@@ -79,6 +79,8 @@ export class OobResetPasswordComponent implements OnInit {
       })
       .catch((error: auth.Error) => {
         this.submitting = false;
+        this.passwordFc.markAsDirty();
+        this.passwordFc.markAsTouched();
         switch (error.code) {
           case 'auth/weak-password':
             NgxFirebaseAuthFormHelper.setErrorUntilChanged(this.passwordFc, error.code);

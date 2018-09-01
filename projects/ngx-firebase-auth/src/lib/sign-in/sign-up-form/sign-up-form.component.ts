@@ -87,6 +87,10 @@ export class SignUpFormComponent implements OnInit, AfterViewInit {
       })
       .catch(error => {
         this.submitting = false;
+        this.emailFc.markAsDirty();
+        this.emailFc.markAsTouched();
+        this.passwordFc.markAsDirty();
+        this.passwordFc.markAsTouched();
         switch (error.code) {
           case 'auth/invalid-email':
           case 'ngx-firebase-auth/account-exists':
