@@ -2,11 +2,20 @@
 
 Angular components for email-first sign in and out-of-band (oob) actions (reset password, etc).
 
+## Why?
+The [current "drop-in" Firebase auth library](https://github.com/firebase/firebaseui-web) did not meet the needs of several Angular projects. Your results may vary. Features:
+
+- Explicit sign in success output, passing an instance of `auth.UserCredential`.
+- Sign out link.
+- An Oob Component designed to live on a separate route.
+
 ## Notes
 - This is a work in progress.
 - The component styling is based on Bootstrap.
--  Supports sign in by password, Google, Facebook, Twitter and GitHub. Does not currently support sign in via email link or phone.
+- Does not currently support email link and phone sign-in. Supports sign in by password + Google, Facebook, Twitter and GitHub.
 - Depends upon [angularfire2](https://github.com/angular/angularfire2)
+
+
 
 
 ## Install
@@ -33,6 +42,7 @@ npm i @nowzoo/ngx-firebase-auth --save
 - Only the OAuth providers you pass in `oAuthProviderIds` will be shown as sign up options for new users.
 - For existing users, all oAuth providers for that user will be displayed as sign in options.
 - Only the `password` and  the Twitter, Google, GitHub and Facebook providers are currently supported.
+- Create a sign out link: `<a routerLink="path/to/your/route" [queryParams]="{action: 'signOut'}>Sign Out</a>"
 
 #### Sign In Component Usage
 Import `NgxFirebaseAuthSignInModule` into the module which contains your sign in route...
