@@ -1,6 +1,6 @@
 {
   "name": "@nowzoo/ngx-firebase-auth",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Angular components for Firebase email-first sign in and out-of-band (oob) actions (reset password, etc).",
   "keywords": [
     "firebase",
